@@ -1,13 +1,21 @@
 package betting;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import betting.models.Bet;
+import betting.models.BettingCalendar;
+import betting.models.BettingSystem;
+import betting.models.User;
 
 public class UserRegistrationTest
 {
@@ -42,6 +50,7 @@ public class UserRegistrationTest
 		
 		assertEquals(1, bettingSystem.getNumberofUsers());
 	}
+	
 	
 	@Test
 	public void testPasswordSuccess()
@@ -231,7 +240,7 @@ public class UserRegistrationTest
 	@Test
 	public void testFreeUser()
 	{
-		user.setAccount("Free");
+		user.setAccount(User.ACCOUNT_FREE);
 		assertEquals(0, user.getAccount()); 
 	}
 	
@@ -241,7 +250,7 @@ public class UserRegistrationTest
 	@Test
 	public void testPremiumUser()
 	{
-		user.setAccount("Premium");
+		user.setAccount(User.ACCOUNT_PREMIUM);
 		assertEquals(1, user.getAccount()); 
 	}
 	
@@ -251,7 +260,7 @@ public class UserRegistrationTest
 	@Test (expected = IllegalArgumentException.class)
 	public void testInvalidUser()
 	{
-		user.setAccount("Invalid");
+		user.setAccount(3);
 	}
 	
 	@Test
@@ -509,25 +518,25 @@ public class UserRegistrationTest
 	public void testingFreeAccountFail() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Free");
+		user.setAccount(User.ACCOUNT_FREE);
 		bettingSystem.addUser(user);
 		assertEquals(user, bettingSystem.getUser("Brandon"));
 		assertEquals(1, bettingSystem.getNumberofUsers());
 		
-		Bet bet = new Bet(user.getUsername(), Bet.HIGH, 5);
+		Bet bet = new Bet(user, Bet.HIGH, 5);
 	}
 	
 	@Test 
 	public void testingFreeAccountSuccess() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Free");
+		user.setAccount(User.ACCOUNT_FREE);
 		bettingSystem.addUser(user);
 		assertEquals(user, bettingSystem.getUser("Brandon"));
 		assertEquals(1, bettingSystem.getNumberofUsers());
 		
-		Bet bet = new Bet(user.getUsername(), Bet.LOW, 5);
-		bettingSystem.placeBet(bet);
+		Bet bet = new Bet(user, Bet.LOW, 5);
+		bettingSystem.placeBet(null, bet);
 		assertEquals(1, bettingSystem.getNoOfBets());
 	}
 	
@@ -536,54 +545,54 @@ public class UserRegistrationTest
 	public void testingPremiumAccountSuccess() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Premium");
+		user.setAccount(User.ACCOUNT_PREMIUM);
 		bettingSystem.addUser(user);
 		
-		Bet bet = new Bet(user.getUsername(), Bet.HIGH, 5);
+		Bet bet = new Bet(user, Bet.HIGH, 5);
 	}
 	
 	@Test
 	public void testingPremiumAccountSuccess2() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Premium");
+		user.setAccount(User.ACCOUNT_PREMIUM);
 		bettingSystem.addUser(user);
 		
 		@SuppressWarnings("unused")
-		Bet bet = new Bet(user.getUsername(), Bet.LOW, 5);
+		Bet bet = new Bet(user, Bet.LOW, 5);
 	}
 	
 	@Test
 	public void testingPremiumAccountSuccess3() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Premium");
+		user.setAccount(User.ACCOUNT_PREMIUM);
 		bettingSystem.addUser(user);
 		
 		@SuppressWarnings("unused")
-		Bet bet = new Bet(user.getUsername(), Bet.MEDIUM, 5);
+		Bet bet = new Bet(user, Bet.MEDIUM, 5);
 	}
 	
 	@Test
 	public void placingBets() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Premium");
+		user.setAccount(User.ACCOUNT_PREMIUM);
 		bettingSystem.addUser(user);
 		
 		User user2 = new User();
 		user2.setUsername("Andrew");
-		user2.setAccount("Premium");
+		user2.setAccount(User.ACCOUNT_PREMIUM);
 		bettingSystem.addUser(user2);
 		
-		Bet bet = new Bet(user.getUsername(), Bet.MEDIUM, 5);
-		Bet bet2 = new Bet(user2.getUsername(), Bet.MEDIUM, 5);
-		Bet bet3 = new Bet(user.getUsername(), Bet.MEDIUM, 5);
+		Bet bet = new Bet(user, Bet.MEDIUM, 5);
+		Bet bet2 = new Bet(user2, Bet.MEDIUM, 5);
+		Bet bet3 = new Bet(user, Bet.MEDIUM, 5);
 
 
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet2);
-		bettingSystem.placeBet(bet3);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet2);
+		bettingSystem.placeBet(null, bet3);
 		
 		assertEquals(2, bettingSystem.getNoOfBets("Brandon"));
 	}
@@ -592,11 +601,11 @@ public class UserRegistrationTest
 	public void validFreeUserBet() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Free");
+		user.setAccount(User.ACCOUNT_FREE);
 		bettingSystem.addUser(user);
 		
-		Bet bet = new Bet(user.getUsername(), Bet.LOW, 5);
-		bettingSystem.placeBet(bet);
+		Bet bet = new Bet(user, Bet.LOW, 5);
+		bettingSystem.placeBet(null, bet);
 		assertEquals(bet, bettingSystem.getLastBet(user.getUsername()));
 	}
 	
@@ -604,12 +613,12 @@ public class UserRegistrationTest
 	public void validFreeUserBet2() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Free");
+		user.setAccount(User.ACCOUNT_FREE);
 		bettingSystem.addUser(user);
 		
 		//placing a bet over 5
-		Bet bet = new Bet(user.getUsername(), Bet.LOW, 0);
-		bettingSystem.placeBet(bet);
+		Bet bet = new Bet(user, Bet.LOW, 0);
+		bettingSystem.placeBet(null, bet);
 		assertEquals(bet, bettingSystem.getLastBet(user.getUsername()));
 	}
 	
@@ -617,12 +626,12 @@ public class UserRegistrationTest
 	public void invalidFreeUserBet() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Free");
+		user.setAccount(User.ACCOUNT_FREE);
 		bettingSystem.addUser(user);
 		
 		//placing a bet over 5
-		Bet bet = new Bet(user.getUsername(), Bet.LOW, -1);
-		bettingSystem.placeBet(bet);
+		Bet bet = new Bet(user, Bet.LOW, -1);
+		bettingSystem.placeBet(null, bet);
 		assertEquals(bet, bettingSystem.getLastBet(user.getUsername()));
 	}
 	
@@ -632,12 +641,12 @@ public class UserRegistrationTest
 	public void invalidFreeUserBet2() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Free");
+		user.setAccount(User.ACCOUNT_FREE);
 		bettingSystem.addUser(user);
 		
 		//placing a bet over 5
-		Bet bet = new Bet(user.getUsername(), Bet.LOW, 6);
-		bettingSystem.placeBet(bet);
+		Bet bet = new Bet(user, Bet.LOW, 6);
+		bettingSystem.placeBet(null, bet);
 		assertEquals(bet, bettingSystem.getLastBet(user.getUsername()));
 	}
 	
@@ -645,13 +654,13 @@ public class UserRegistrationTest
 	public void validNumberFreeUserBets() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Free");
+		user.setAccount(User.ACCOUNT_FREE);
 		bettingSystem.addUser(user);
 		
-		Bet bet = new Bet(user.getUsername(), Bet.LOW, 3);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
+		Bet bet = new Bet(user, Bet.LOW, 3);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
 		
 		assertEquals(3, bettingSystem.getNoOfBets(user.getUsername()));
 	}
@@ -660,14 +669,14 @@ public class UserRegistrationTest
 	public void invalidNumberFreeUserBets() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Free");
+		user.setAccount(User.ACCOUNT_FREE);
 		bettingSystem.addUser(user);
 		
-		Bet bet = new Bet(user.getUsername(), Bet.LOW, 3);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
+		Bet bet = new Bet(user, Bet.LOW, 3);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
 		
 		assertEquals(3, bettingSystem.getNoOfBets(user.getUsername()));
 	}
@@ -676,30 +685,31 @@ public class UserRegistrationTest
 	public void validNumberPremiumUserBets() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Premium");
+		user.setAccount(User.ACCOUNT_PREMIUM);
 		bettingSystem.addUser(user);
 		
-		Bet bet = new Bet(user.getUsername(), Bet.MEDIUM, 500);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
+		Bet bet = new Bet(user, Bet.MEDIUM, 500);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
 		
-		assertEquals(2000, bettingSystem.getTotalAmount("Brandon"));
+		ArrayList<Bet> bets = bettingSystem.getBets(null, user);
+		assertEquals(2000, bettingSystem.getTotalAmount(bets, "Brandon"));
 	}
 	
 	@Test (expected = Exception.class)
 	public void invalidNumberPremiumUserBets() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount("Premium");
+		user.setAccount(User.ACCOUNT_PREMIUM);
 		bettingSystem.addUser(user);
 		
-		Bet bet = new Bet(user.getUsername(), Bet.MEDIUM, 1500);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
-		bettingSystem.placeBet(bet);
+		Bet bet = new Bet(user, Bet.MEDIUM, 1500);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
+		bettingSystem.placeBet(null, bet);
 	}
 	
 	@Test
