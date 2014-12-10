@@ -28,6 +28,7 @@
         Connection con = ConnectionPool.getConnection();
         BettingSystem bettingSystem = BettingSystem.getInstance();
         userBets = bettingSystem.getBets(con, loggedUser);
+        
 
     }
     
@@ -228,17 +229,10 @@
 		  
 		</div>
 
-
-     
-    
     </header>
 
-
-
-
-
     <!-- jQuery -->
-    <script src="js/jquery.js"></script>
+    <script src="js/jquery-2.1.1.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
