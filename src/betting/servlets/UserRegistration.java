@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import betting.helper.SQLHelper;
 import betting.models.BettingSystem;
 import betting.models.ConnectionPool;
 import betting.models.User;
@@ -35,10 +36,10 @@ public class UserRegistration extends HttpServlet
 	
 	protected void  processRequest(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
+		Connection con = ConnectionPool.getConnection();
+		
 		try
 		{
-			Connection con = ConnectionPool.getConnection();
-			
 			User user = new User();
 			user.setUsername(request.getParameter("username"));
 			user.setPassword(request.getParameter("password"));
@@ -63,6 +64,10 @@ public class UserRegistration extends HttpServlet
 			System.out.println("[UserRegistration.processRequest()] - " + e.getMessage());
 			response.sendError(500);
 			return;
+		}
+		finally
+		{
+			SQLHelper.close(con);
 		}
 		
 		response.sendRedirect("index.jsp");

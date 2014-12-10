@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import betting.helper.SQLHelper;
+
 public class BettingSystem
 {
 	private static final int MAX_BETTING_SUM 	= 5000;
@@ -86,12 +88,15 @@ public class BettingSystem
 				user.setCardNumber(rs.getString("CREDIT_CARD"));
 				user.setExpiryDate(rs.getDate("EXPIRY_DATE"));
 				user.setCvv(rs.getString("CVV"));
-				con.close();
 			}
 		}
 		catch (SQLException e)
 		{
 			System.out.println("BettingSystem.getUser(Connection, String) - " + e.getMessage());
+		}
+		finally
+		{
+			SQLHelper.close(con);
 		}
 		
 		return user; 
@@ -154,11 +159,14 @@ public class BettingSystem
 		{
 			CallableStatement cs = con.prepareCall(callStmt.toString());
 			cs.execute();
-			con.close();
 		} 
 		catch (SQLException e)
 		{
 			System.out.println("BettingSystem.addUser() - " + e.getMessage());
+		}
+		finally
+		{
+			SQLHelper.close(con);
 		}
 	}
 	
@@ -244,14 +252,7 @@ public class BettingSystem
 			user.setLoginType(Login.LOGIN_FAIL);
 		}
 		
-		try
-		{
-			con.close();
-		}
-		catch (SQLException e)
-		{
-			System.out.println("BettingSystem.login(Connection, String, String, User) - " + e.getMessage());
-		}
+		SQLHelper.close(con);
 		return user;
 		
 	}
@@ -291,7 +292,6 @@ public class BettingSystem
 		
 		else //when we DO NOT have a validFreeAccount
 			throw new Exception("Free users can place a maximum of 3 bets");
-		
 
 		betList.put(user.getUsername(), userBets);
 	}
@@ -413,11 +413,14 @@ public class BettingSystem
 			{
 				CallableStatement cs = con.prepareCall(callStmt.toString());
 				cs.execute();
-				con.close();
 			} 
 			catch (SQLException e)
 			{
 				System.out.println("BettingSystem.pushBet(Connection, Bet) - " + e.getMessage());
+			}
+			finally
+			{
+				SQLHelper.close(con);
 			}
 		}
 	}

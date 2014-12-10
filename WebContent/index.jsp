@@ -6,7 +6,8 @@
 			betting.models.BettingSystem,
 			betting.models.ConnectionPool,
 			betting.models.Login,
-			betting.models.Bet"%>
+			betting.models.Bet,
+			betting.helper.SQLHelper"%>
 	
 <%
 	String loginMessage = "";
@@ -29,7 +30,7 @@
 		Connection con = ConnectionPool.getConnection();
 		BettingSystem bettingSystem = BettingSystem.getInstance();
 		userBets = bettingSystem.getBets(con, loggedUser);
-
+		SQLHelper.close(con);
 	}
 	
 	if(!loginMessage.equals(Login.LOGIN_SUCCESS.toString()))

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import betting.helper.SQLHelper;
 import betting.models.BettingSystem;
 import betting.models.ConnectionPool;
 import betting.models.Login;
@@ -59,10 +60,13 @@ public class UserLogin extends HttpServlet
 			
 			userSession.setAttribute("loggedUser", loggingUser);
 			
+			SQLHelper.close(con);
+			
 			if(loggingUser.getLoginType() == Login.LOGIN_SUCCESS)
 				response.sendRedirect("index.jsp?action=1");
 			else
 				response.sendRedirect("index.jsp?action=0");
+			
 		}
 	}
 }

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import betting.helper.SQLHelper;
 import betting.models.Bet;
 import betting.models.BettingSystem;
 import betting.models.ConnectionPool;
@@ -50,6 +51,10 @@ public class ManageBets extends HttpServlet
 		{
 			System.out.println("ManageBets.processRequest() - " + e.getMessage());
 			response.sendRedirect("index.jsp?action=0");
+		}
+		finally
+		{
+			SQLHelper.close(con);
 		}
 	}
 }
