@@ -15,7 +15,7 @@ import betting.models.ConnectionPool;
 import betting.models.User;
 
 /**
- * Servlet implementation class ManageBets test
+ * Servlet implementation class ManageBets
  */
 public class ManageBets extends HttpServlet 
 {
