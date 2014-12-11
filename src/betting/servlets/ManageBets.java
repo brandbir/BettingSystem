@@ -50,7 +50,7 @@ public class ManageBets extends HttpServlet
 		catch(Exception e)
 		{
 			System.out.println("ManageBets.processRequest() - " + e.getMessage());
-			response.sendRedirect("index.jsp?action=0");
+			response.sendRedirect("usersection.jsp");
 		}
 		finally
 		{

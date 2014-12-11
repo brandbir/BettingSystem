@@ -1,39 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"
-    import="java.util.ArrayList,
-            java.sql.Connection,
-            betting.models.User,
-            betting.models.BettingSystem,
-            betting.models.ConnectionPool,
-            betting.models.Login,
-            betting.models.Bet"%>
- <%         
-    String loginMessage = "";
-    String dateOfBirth = "";
-    String expiryDate = "";
-    ArrayList<Bet> userBets = null;
-    
-    User loggedUser = (User)session.getAttribute("loggedUser");
-    String action = request.getParameter("action");
-    
-    if(action == null)
-        action = "0";
-    
-    if(loggedUser != null)
-    {
-        loginMessage = loggedUser.getLoginType().toString(); //LoginType -> if user is locked or unlocked
-        dateOfBirth = loggedUser.getDateOfBirth().toString();
-        expiryDate = loggedUser.getExpiryDate().toString();
+    import="betting.models.User"
+  %>
+<%
+String loginMessage = "";
+User loggedUser = (User)session.getAttribute("loggedUser");
+if(loggedUser != null)
+{
+   loginMessage = loggedUser.getLoginType().toString(); 
+}
 
-        Connection con = ConnectionPool.getConnection();
-        BettingSystem bettingSystem = BettingSystem.getInstance();
-        userBets = bettingSystem.getBets(con, loggedUser);
-        
-
-    }
-    
-    if(!loginMessage.equals(Login.LOGIN_SUCCESS.toString())) //EXPLAIN....
-        loggedUser = new User();
 %>
 
 <!DOCTYPE html>
@@ -51,14 +27,30 @@
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+     
 
     <!-- Custom CSS -->
     <link href="css/full-slider.css" rel="stylesheet">
     <link type="text/css" href="css/styling.css" rel="stylesheet">
-    <link type="text/css" href="css/datepicker.css" rel="stylesheet">
     
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"> </script>
+    <!-- jQuery -->
+    <script src="js/jquery-2.1.1.js"></script>
     
+    
+    <!-- Bootstrap Core JavaScript Placed here inkella ma jahdimx habba ordering!!-->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/functionality.js"></script>
+    
+    <!-- JQuery-UI -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+  <script>
+  $(function() {
+    $( "#DOB" ).datepicker({dateFormat:'yy-mm-dd'});
+    $("#expiry-date").datepicker({dateFormat:'yy-mm-dd'});
+  });
+  </script>
 </head>
 
 <body>
@@ -83,14 +75,15 @@
 <!--                         <a href="#">About</a> -->
 <!--                     </li> -->
                 </ul>
-                <form name="loginForm" action="usersection.jsp" class="navbar-form navbar-right" role="search" onsubmit="return(validateLogin());">
-	                 <div class="form-group">
-	                     <input type="text" class="form-control" name="username" placeholder="Username">
-	                 </div>
-	                 <div class="form-group">
-	                     <input type="password" class="form-control" name="password" placeholder="Password">
-	                 </div>
-	                 <button type="submit" class="btn btn-default" >Log In</button>
+                <form id="login" action="UserLogin?action=login" method="post" class="navbar-form navbar-right" role="search" onsubmit="return(validateLogin());">
+                     <div class="form-group">
+                         <input type="text" class="form-control" name="username" placeholder="Username">
+                     </div>
+                     <div class="form-group">
+                         <input type="password" class="form-control" name="password" placeholder="Password">
+                     </div>
+                     <input type="submit" class="btn btn-default" value="Login">
+                     <div class="alert alert-danger"><%=loginMessage%></div>
                 </form>
             </div>
             
@@ -165,77 +158,73 @@
             <span class="icon-next"></span>
         </a>
         
-        
-		<div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-		  <div class="modal-dialog">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-		        <h4 class="modal-title" id="modalLabel">Sign Up!</h4>
-		      </div>
-		      <div class="modal-body">
-		        <form id="user-submission" action="UserSubmission" role="form" method="post">
-		          <div class="form-group">
-		            <label for="username" class="control-label">Username:</label>
-		            <input type="text" class="form-control" id="username" placeholder="Username" value="<%=loggedUser.getUsername()%>"/>
-		          </div>
-		          <div class="form-group">
-		            <label for="Password" class="control-label">Password:</label>
-		            <input type="password" class="form-control" id="Password" placeholder="Password" value="<%=loggedUser.getPassword()%>"/>
-		          </div>
-		          <div class="form-group">
-		            <label for="name" class="control-label">Name:</label>
-		            <input type="text" class="form-control" id="name" placeholder="name" value="<%=loggedUser.getName()%>"/>
-		          </div>
-		          <div class="form-group">
-		            <label for="surname" class="control-label">Surname:</label>
-		            <input type="text" class="form-control" id="surnname" placeholder="surname" value="<%=loggedUser.getSurname()%>"/>
-		          </div>
-		          <div class="form-group">
-		            <label for="DOB" class="control-label">Date of Birth:</label>
-		            <input type="date" class="form-control datepicker" id="DOB" placeholder="Date of Birth" value="12-02-2012" value="<%=dateOfBirth%>"/> 
-		          </div>
-		          <div class="form-group">
-		            <label for="credNo" class="control-label">Credit Card Number:</label>
-		            <input type="text" class="form-control" id="credNo" placeholder="Credit Card Number" value="<%=loggedUser.getCardNumber()%>"/>
-		          </div>
-		           <div class="form-group">
-		            <label for="credExpiry" class="control-label">Credit Card Expiry Date:</label>
-		            <input type="date" class="form-control" id="credExpiry" placeholder="Credit Card Expiry Date" value="<%=expiryDate%>"/>
-		          </div>
-		          <div class="form-group">
-		            <label for="credCVV" class="control-label">Credit Card CVV:</label>
-		            <input type="text" class="form-control" id="credCVV" placeholder="Credit Card Expiry Date" value="<%=loggedUser.getCvv()%>"/>
-		          </div>
-		          <br>
-		          <div class="btn-group" data-toggle="buttons">
-		              <label class="btn btn-primary active">
-		                <input type="radio" name="options" id="option1" autocomplete="off"  value="<%=User.ACCOUNT_FREE%>" checked> Free
-		              </label>
-		              <label class="btn btn-primary">
-		                <input type="radio" name="options" id="option2" autocomplete="off" value="<%=User.ACCOUNT_PREMIUM%>"> Premium
-		              </label>
-		          </div>
-		        </form>
-		      </div>
-		        
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		        <button type="button" class="btn btn-primary">Submit</button>
-		      </div>
-		    </div>
-		  </div>
-		  
-		</div>
+       <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+         <div class="modal-dialog">
+           <div class="modal-content">
+             <div class="modal-header">
+               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+               <h4 class="modal-title" id="modalLabel">Sign Up!</h4>
+             </div>
+             <div class="modal-body">
+               <form id="user-submission" action="UserSubmission" role="form" method="post">
+                 <div class="form-group">
+                   <label for="username" class="control-label">Username:</label>
+                   <input type="text" class="form-control" id="username" placeholder="Username" name="username"/>
+                 </div>
+                 <div class="form-group">
+                   <label for="Password" class="control-label">Password:</label>
+                   <input type="password" class="form-control" id="Password" placeholder="Password" name="password"/>
+                 </div>
+                 <div class="form-group">
+                   <label for="name" class="control-label">Name:</label>
+                   <input type="text" class="form-control" id="name" placeholder="name" name="user-name" />
+                 </div>
+                 <div class="form-group">
+                   <label for="surname" class="control-label">Surname:</label>
+                   <input type="text" class="form-control" id="surnname" placeholder="surname" name="surname"/>
+                 </div>
+                 <div class="form-group">
+                   <label for="DOB" class="control-label">Date of Birth:</label>
+                   <input type="text" id="DOB" class="form-control" value="yyyy-mm-dd" name="dob">
+                 </div>
+                 <div class="form-group">
+                   <label for="credNo" class="control-label">Credit Card Number:</label>
+                   <input type="text" class="form-control" id="credNo" placeholder="Credit Card Number" name="credit-card"/>
+                 </div>
+                  <div class="form-group">
+                   <label for="credExpiry" class="control-label">Credit Card Expiry Date:</label>
+                   <input type="text" id="expiry-date" class="form-control" value="yyyy-mm-dd" name="expiry-date">
+                 </div>
+                 <div class="form-group">
+                   <label for="credCVV" class="control-label">Credit Card CVV:</label>
+                   <input type="text" class="form-control" id="credCVV" placeholder="Credit Card Expiry Date" name="cvv"/>
+                 </div>
+                 <br>
+                 <div class="btn-group" data-toggle="buttons">
+<!--                      <label class="btn btn-primary active"> -->
+<!--                        <input type="radio" name="premium" id="option1" autocomplete="off"   checked> Free -->
+<!--                      </label> -->
+<!--                      <label class="btn btn-primary"> -->
+<!--                        <input type="radio" name="premium" id="option2" autocomplete="off" > Premium -->
+<!--                      </label> -->
+					<select name="premium">
+					    <option value="<%=1%>">Premium</option>
+                        <option value="<%=0%>">Free</option>
+					  </select>
+                 </div>
+                 <div class="modal-footer">
+	               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	               <input type="submit" class="btn btn-default" value="Submit Details">
+	             </div>
+               </form>
+             </div>
+             
+           </div>
+         </div>
+          
+       </div>
 
     </header>
-
-    <!-- jQuery -->
-    <script src="js/jquery-2.1.1.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
-     <script src="js/functionality.js"></script>
 
 </body>
 

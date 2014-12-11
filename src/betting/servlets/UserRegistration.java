@@ -70,6 +70,6 @@ public class UserRegistration extends HttpServlet
 			SQLHelper.close(con);
 		}
 		
-		response.sendRedirect("index.jsp");
+		response.sendRedirect("indexMain.jsp");
 	}
 }

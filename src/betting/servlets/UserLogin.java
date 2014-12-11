@@ -51,7 +51,7 @@ public class UserLogin extends HttpServlet
 			
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
-			User loggingUser = (User) userSession.getAttribute("loggedUser");
+			User loggingUser = (User) userSession.getAttribute("loggedUser"); //with each login, it is checked for invalid credentials and might also be locked 
 	
 			loggingUser = bettingSystem.login(con, username, password, loggingUser);
 			System.out.println("Login Type:" + loggingUser.getLoginType().toString() + 
@@ -63,9 +63,9 @@ public class UserLogin extends HttpServlet
 			SQLHelper.close(con);
 			
 			if(loggingUser.getLoginType() == Login.LOGIN_SUCCESS)
-				response.sendRedirect("index.jsp?action=1");
+				response.sendRedirect("usersection.jsp");
 			else
-				response.sendRedirect("index.jsp?action=0");
+				response.sendRedirect("indexMain.jsp");
 			
 		}
 	}

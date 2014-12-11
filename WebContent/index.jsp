@@ -16,7 +16,7 @@
 	ArrayList<Bet> userBets = null;
 	
 	User loggedUser = (User)session.getAttribute("loggedUser");
-	String action = request.getParameter("action");  //MANDIX BZONNAß
+	String action = request.getParameter("action");  //MANDIX BZONNAß ghandi bzonnha to change page to usersection on successful login
 	
 	if(action == null)
 		action = "0";
@@ -41,7 +41,7 @@
 	<head>
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 		<link rel="stylesheet" href="css/style.css">
-		<script src="scripts/jquery-2.1.1.js"></script>
+		<script src="js/jquery-2.1.1.js"></script>
 		<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 		<title>Betting System</title>
