@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
 	<Resource name="jdbc/TEST" 
-              auth="Container"
-              type="javax.sql.DataSource" 
-              username="brandon"
-              password="Brandbir018"
-              driverClassName="com.ibm.db2.jcc.DB2Driver"
-              url="jdbc:db2://localhost:50000/TEST"
-              maxActive="10" 
-              maxIdle="4"/>
-  </Context>
-  
+		auth="Container"
+		type="javax.sql.DataSource" 
+		username="brandon"
+		password="Brandbir018"
+		driverClassName="com.ibm.db2.jcc.DB2Driver"
+		url="jdbc:db2://77.71.245.17:50000/TEST"
+		maxActive="10" 
+		maxIdle="4"/>
+</Context>
+
+<!-- Convert IP to localhost when deployed on an external network -->
