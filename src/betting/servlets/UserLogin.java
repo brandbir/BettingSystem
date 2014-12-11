@@ -40,7 +40,7 @@ public class UserLogin extends HttpServlet
 		if(action.equals("logout"))
 		{
 			request.getSession().removeAttribute("loggedUser");
-			response.sendRedirect("index.jsp?action=0");
+			response.sendRedirect("index.jsp");
 		}
 		
 		else if(action.equals("login"))
@@ -65,7 +65,7 @@ public class UserLogin extends HttpServlet
 			if(loggingUser.getLoginType() == Login.LOGIN_SUCCESS)
 				response.sendRedirect("usersection.jsp");
 			else
-				response.sendRedirect("indexMain.jsp");
+				response.sendRedirect("index.jsp");
 			
 		}
 	}

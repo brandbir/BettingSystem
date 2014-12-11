@@ -45,7 +45,7 @@ public class ManageBets extends HttpServlet
 		{
 			Bet bet = new Bet(user, level, amount);
 			bettingSystem.placeBet(con, bet);
-			response.sendRedirect("index.jsp?action=2");
+			response.sendRedirect("usersection.jsp");
 		}
 		catch(Exception e)
 		{

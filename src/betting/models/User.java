@@ -144,6 +144,14 @@ public class User
 		return premium;
 	}
 	
+	public String getAccountDescription()
+	{
+		if(premium == User.ACCOUNT_PREMIUM)
+			return "Premium";
+		else
+			return "Free";
+	}
+	
 	/**
 	 * @param type of user account
 	 */

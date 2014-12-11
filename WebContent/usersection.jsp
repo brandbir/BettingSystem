@@ -78,7 +78,8 @@
             <div class="navbar-header">
                 <a class="navbar-brand">Speed * Bet</a>
             </div>
-            <form id="logout" name="menuForm" action="UserLogin?action=logout" class="navbar-form navbar-right" role="search" >
+            <form id="logout" name="menuForm" action="UserLogin?action=logout" method="post" class="navbar-form navbar-right" role="search" >
+                    <a class="btn btn-default" data-target="#userDetailsModal" data-toggle="modal" href="#">Details</a>
                     <a class="btn btn-default" data-target="#tableModal" data-toggle="modal" href="#">Placed Bets</a>
                     <input type="submit" class="btn btn-default" value="Logout">
             </form>
@@ -161,6 +162,93 @@
                  </div>
                   <label>Risk Level: </label>
                       <select name="level" class="form-control">
+                        <option value="<%=Bet.LOW%>">Low</option>
+                        <option value="<%=Bet.MEDIUM%>">Medium</option>
+                        <option value="<%=Bet.HIGH%>">High</option>
+                      </select>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Place Bet">
+                      </div>
+                </form>
+              </div>
+              
+            </div>
+          </div>
+</div>
+
+<div class="modal fade" id="userDetailsModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="modalLabel">Betting</h4>
+              </div>
+              <div class="modal-body">
+                <form role="form" action="ManageBets" method="post">
+                      <div class="form-group">
+	                   <label for="username" class="control-label">Username:</label>
+	                   <input type="text" class="form-control" id="username" name="username" value="<%=loggedUser.getUsername()%>"/>
+	                 </div>
+	                 <div class="form-group">
+	                   <label for="Password" class="control-label">Password:</label>
+	                   <input type="password" class="form-control" id="Password" name="password" value="<%=loggedUser.getPassword()%>"/>
+	                 </div>
+	                 <div class="form-group">
+	                   <label for="name" class="control-label">Name:</label>
+	                   <input type="text" class="form-control" id="name" name="user-name"  value="<%=loggedUser.getName()%>"/>
+	                 </div>
+	                 <div class="form-group">
+	                   <label for="surname" class="control-label">Surname:</label>
+	                   <input type="text" class="form-control" id="surnname" name="surname" value="<%=loggedUser.getSurname()%>"/>
+	                 </div>
+	                 <div class="form-group">
+	                   <label for="DOB" class="control-label">Date of Birth:</label>
+	                   <input type="text" id="DOB" class="form-control" value="yyyy-mm-dd" name="dob" value="<%=dateOfBirth%>">
+	                 </div>
+	                 <div class="form-group">
+	                   <label for="credNo" class="control-label">Credit Card Number:</label>
+	                   <input type="text" class="form-control" id="credNo" name="credit-card" value="<%=loggedUser.getCardNumber()%>"/>
+	                 </div>
+	                  <div class="form-group">
+	                   <label for="credExpiry" class="control-label">Credit Card Expiry Date:</label>
+	                   <input type="text" id="expiry-date" class="form-control" value="yyyy-mm-dd" name="expiry-date" value="<%=expiryDate%>">
+	                 </div>
+	                 <div class="form-group">
+	                   <label for="credCVV" class="control-label">Credit Card CVV:</label>
+	                   <input type="text" class="form-control" id="credCVV" name="cvv" value="<%=loggedUser.getCvv()%>"/>
+	                 </div>
+	                 <br>
+	                 <div class="form-group">
+                       <label for="accountDescr" class="control-label">Account:</label>
+                       <input type="text" class="form-control" id="accountDescr" name="accountDescr" value="<%=loggedUser.getAccountDescription()%>"/>
+                     </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      </div>
+                </form>
+              </div>
+              
+            </div>
+          </div>
+</div>
+
+
+<div class="modal fade" id="betModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="modalLabel">Betting</h4>
+              </div>
+              <div class="modal-body">
+                <form role="form" action="ManageBets" method="post">
+                <div class="form-group">
+                   <label for="username" class="control-label">Amount:</label>
+                   <input type="text" class="form-control" id="amount" placeholder="Amount in Euros" name="amount"/>
+                 </div>
+                  <label>Risk Level: </label>
+                      <select name="level" class="form-control">
 				        <option value="<%=Bet.LOW%>">Low</option>
                         <option value="<%=Bet.MEDIUM%>">Medium</option>
                         <option value="<%=Bet.HIGH%>">High</option>
@@ -171,8 +259,6 @@
 		              </div>
                 </form>
               </div>
-              
-              
               
             </div>
           </div>
