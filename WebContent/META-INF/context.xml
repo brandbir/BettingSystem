@@ -3,7 +3,7 @@
 	<Resource name="jdbc/TEST" 
               auth="Container"
               type="javax.sql.DataSource" 
-              username="brandon" 
+              username="brandon"
               password="Brandbir018"
               driverClassName="com.ibm.db2.jcc.DB2Driver"
               url="jdbc:db2://localhost:50000/TEST"
