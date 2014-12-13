@@ -9,11 +9,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import betting.helper.BettingException;
+import betting.helper.Misc;
 import betting.helper.SQLHelper;
 
 public class BettingSystem
 {
-	private static final int MAX_BETTING_SUM 	= 5000;
+	public static final int ACCOUNT_LOCK_INTERVAL_MINS = 5;
+	public  static final int MAX_BETTING_SUM 	= 5000;
 	private static final int MAX_INVALID_LOGINS = 3;
 	
 	private HashMap<String, User> usersDB = new HashMap<String, User>();
@@ -67,41 +70,64 @@ public class BettingSystem
 	public static User getUser(Connection con, String username)
 	{
 		User user = null;
-		StringBuffer callStmt = new StringBuffer();
-		callStmt.append("CALL SELECT_USER('");
-		callStmt.append(username);
-		callStmt.append("')");
-		
-		try
+		if (con == null)
 		{
-			CallableStatement cs = con.prepareCall(callStmt.toString());
-			ResultSet rs = cs.executeQuery();
-			if(rs.next())
+			BettingSystem b = BettingSystem.getInstance();
+			user = b.getUser(username);
+			return user;
+		}
+		else
+		{
+			StringBuffer callStmt = new StringBuffer();
+			callStmt.append("CALL SELECT_USER('");
+			callStmt.append(username);
+			callStmt.append("')");
+			
+			try
 			{
-				user = new User();
-				user.setUsername(username);
-				user.setPassword(rs.getString("PASSWORD"));
-				user.setName(rs.getString("NAME"));
-				user.setSurname(rs.getString("SURNAME"));
-				user.setDateOfBirth(rs.getDate("DOB"));
-				user.setAccount(rs.getInt("PREMIUM"));
-				user.setCardNumber(rs.getString("CREDIT_CARD"));
-				user.setExpiryDate(rs.getDate("EXPIRY_DATE"));
-				user.setCvv(rs.getString("CVV"));
+				CallableStatement cs = con.prepareCall(callStmt.toString());
+				ResultSet rs = cs.executeQuery();
+				if(rs.next())
+				{
+					user = new User();
+					user.setUsername(username);
+					user.setPassword(rs.getString("PASSWORD"));
+					user.setName(rs.getString("NAME"));
+					user.setSurname(rs.getString("SURNAME"));
+					user.setDateOfBirth(rs.getDate("DOB"));
+					user.setAccount(rs.getString("PREMIUM"));
+					user.setCardNumber(rs.getString("CREDIT_CARD"));
+					user.setExpiryDate(rs.getDate("EXPIRY_DATE"));
+					user.setCvv(rs.getString("CVV"));
+				}
 			}
-		}
-		catch (SQLException e)
-		{
-			System.out.println("BettingSystem.getUser(Connection, String) - " + e.getMessage());
-		}
-		finally
-		{
-			SQLHelper.close(con);
+			catch (SQLException e)
+			{
+				System.out.println("BettingSystem.getUser(Connection, String) - " + e.getMessage());
+			}
 		}
 		
 		return user; 
 	}
 	
+	
+	/**
+	 * Check if a username is already being used by another user
+	 * @param con Database connection
+	 * @param username username to be found
+	 * @return whether the username is found in the system
+	 */
+	public static boolean userExists(Connection con, String username)
+	{
+		User user = null;
+		
+		user = getUser(con, username);
+		
+		if(user == null)
+			return false;
+		else
+			return true;
+	}
 	/**
 	 * Setting the class dependency of the Betting System
 	 * @param calendar from where dates will be obtained
@@ -126,47 +152,52 @@ public class BettingSystem
 	 */
 	public static void addUser(Connection con, User user)
 	{
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		StringBuffer args = new StringBuffer();
-		
-		args.append("'");
-		args.append(user.getUsername());
-		args.append("', '");
-		args.append(user.getPassword());
-		args.append("', '");
-		args.append(user.getName());
-		args.append("', '");
-		args.append(user.getSurname());
-		args.append("', '");
-		args.append(df.format(user.getDateOfBirth()));
-		args.append("', ");
-		args.append(user.getAccount());
-		args.append(", ");
-		args.append(user.getCardNumber());
-		args.append(", '");
-		args.append(df.format(user.getExpiryDate()));
-		args.append("', ");
-		args.append(user.getCvv());
-		
-		StringBuffer callStmt = new StringBuffer();
-		callStmt.append("CALL CREATE_USER(");
-		callStmt.append(args);
-		callStmt.append(")");
-		
-		System.out.println(callStmt.toString());
-		
-		try
+		if(con == null)
 		{
-			CallableStatement cs = con.prepareCall(callStmt.toString());
-			cs.execute();
-		} 
-		catch (SQLException e)
-		{
-			System.out.println("BettingSystem.addUser() - " + e.getMessage());
+			BettingSystem system = BettingSystem.getInstance();
+			system.addUser(user);
 		}
-		finally
+		else
 		{
-			SQLHelper.close(con);
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			StringBuffer args = new StringBuffer();
+			
+			args.append("'");
+			args.append(user.getUsername());
+			args.append("', '");
+			args.append(user.getPassword());
+			args.append("', '");
+			args.append(user.getName());
+			args.append("', '");
+			args.append(user.getSurname());
+			args.append("', '");
+			args.append(df.format(user.getDateOfBirth()));
+			args.append("', ");
+			args.append(user.getAccount());
+			args.append(", ");
+			args.append(user.getCardNumber());
+			args.append(", '");
+			args.append(df.format(user.getExpiryDate()));
+			args.append("', ");
+			args.append(user.getCvv());
+			
+			StringBuffer callStmt = new StringBuffer();
+			callStmt.append("CALL CREATE_USER(");
+			callStmt.append(args);
+			callStmt.append(")");
+			
+			System.out.println(callStmt.toString());
+			
+			try
+			{
+				CallableStatement cs = con.prepareCall(callStmt.toString());
+				cs.execute();
+			} 
+			catch (SQLException e)
+			{
+				System.out.println("BettingSystem.addUser() - " + e.getMessage());
+			}
+			
 		}
 	}
 	
@@ -179,43 +210,12 @@ public class BettingSystem
 		return usersDB.size();
 	}
 	
-	/**
-	 * Validating user login
-	 * @param username User's username
-	 * @param password User's password
-	 * @return validity of the login
-	 */
-	public boolean login(String username, String password)
-	{
-		User user = getUser(username); 
-		String dbPassword = user.getPassword();
-		if (dbPassword.equals(password))
-		{
-			long lastInvalidAccess = user.getTimeofInvalidLogin();
-			if(calendar.getCurrentTime() - lastInvalidAccess >= 5*60*1000)
-			{
-				user.setInvalidPasswordCount(0);
-				return true;
-			}
-			return false;
-		}
-		else
-		{
-			int invalidCounts = user.getInvalidPasswordCount();
-			user.setInvalidPasswordCount(++invalidCounts);
-			
-			if(invalidCounts == MAX_INVALID_LOGINS)
-				user.setTimeofInvalidLogin(calendar.getCurrentTime());
-
-			return false;
-		}
-		
-	}
 	
 	/**
 	 * Validating user login
 	 * @param username User's username
 	 * @param password User's password
+	 * @param User temporary user details
 	 * @return User details
 	 */
 	public User login(Connection con, String username, String password, User user)
@@ -227,7 +227,7 @@ public class BettingSystem
 		if (dbPassword.equals(password))
 		{
 			long lastInvalidAccess = user.getTimeofInvalidLogin();
-			if(calendar.getCurrentTime() - lastInvalidAccess >= 5*60*1000)
+			if(calendar.getCurrentTime() - lastInvalidAccess >= ACCOUNT_LOCK_INTERVAL_MINS *60*1000)
 			{
 				user.setInvalidPasswordCount(0);
 				
@@ -252,9 +252,7 @@ public class BettingSystem
 			user.setLoginType(Login.LOGIN_FAIL);
 		}
 		
-		SQLHelper.close(con);
 		return user;
-		
 	}
 
 	/**
@@ -262,7 +260,7 @@ public class BettingSystem
 	 * @param bet User's bet
 	 * @throws Exception
 	 */
-	public void placeBet(Connection con, Bet bet) throws Exception
+	public void placeBet(Connection con, Bet bet) throws BettingException
 	{
 		User user = bet.getUser();
 		
@@ -278,7 +276,7 @@ public class BettingSystem
 		boolean validFreeAccount = (user.getAccount() == User.ACCOUNT_FREE) && (userBets.size() < 3);
 		
 		if((bet.getAmount() + currentBetSum) > MAX_BETTING_SUM)
-			throw new Exception("Users cannot have a sum of bets of more than " + MAX_BETTING_SUM);
+			throw new BettingException(Misc.MSG_BETTING_LIMIT);
 		
 		else if(validFreeAccount || user.getAccount() == User.ACCOUNT_PREMIUM )
 		{
@@ -291,7 +289,7 @@ public class BettingSystem
 		}
 		
 		else //when we DO NOT have a validFreeAccount
-			throw new Exception("Free users can place a maximum of 3 bets");
+			throw new BettingException(Misc.MSG_BETTING_FREEUSERS_LIMIT);
 
 		betList.put(user.getUsername(), userBets);
 	}
@@ -303,7 +301,6 @@ public class BettingSystem
 	 */
 	public int getTotalAmount(ArrayList<Bet> userBets, String username)
 	{
-		//ArrayList<Bet> userBets = betList.get(username);
 		if(userBets != null)
 		{
 			int sum = 0;

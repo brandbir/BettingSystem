@@ -8,6 +8,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import betting.helper.LogFile;
+
 public class ConnectionPool
 {
 	private static DataSource dataSource = null;
@@ -28,11 +30,11 @@ public class ConnectionPool
 		}
 		catch(NamingException e)
 		{
-			System.out.println("[ConnectionPool.getConnection()] - " + e.getMessage());
+			LogFile.logError("ConnectionPool.getConnection() - " + e.getMessage());
 		}
 		catch (SQLException e)
 		{
-			System.out.println("[ConnectionPool.getConnection()] - " + e.getMessage());
+			LogFile.logError("ConnectionPool.getConnection() - " + e.getMessage());
 		}
 		
 		return con;

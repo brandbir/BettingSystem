@@ -2,11 +2,16 @@ package betting.models;
 
 import java.sql.Connection;
 
+import betting.helper.BettingException;
+import betting.helper.Misc;
+
 public class Bet
 {
 	public static final int LOW 	= 1;
 	public static final int MEDIUM	= 2;
 	public static final int HIGH	= 3;
+	
+	public static final int FREE_USER_MAX_BET = 5;
 	
 	private User user;
 	private int riskLevel;
@@ -14,7 +19,7 @@ public class Bet
 	private int amount;
 	private BettingSystem bettingSystem = BettingSystem.getInstance();
 	
-	public Bet(User user, int riskLevel, int amount) throws Exception
+	public Bet(User user, int riskLevel, int amount) throws BettingException
 	{
 		
 		this.setUser(user);
@@ -34,7 +39,7 @@ public class Bet
 		return user;
 	}
 
-	public void setUser(Connection con, String username) throws Exception
+	public void setUser(Connection con, String username) throws BettingException
 	{
 		if(con == null)
 			this.user = bettingSystem.getUser(username);
@@ -43,7 +48,7 @@ public class Bet
 			this.user = BettingSystem.getUser(con, username);
 		
 		if(user == null)
-			throw new Exception("Username not found in DB!!");
+			throw new BettingException("User is not found in database");
 	}
 	
 	public void setUser(User user)
@@ -56,11 +61,14 @@ public class Bet
 		return riskLevel;
 	}
 
-	public void setRiskLevel(int riskLevel) throws Exception
+	public void setRiskLevel(int riskLevel) throws BettingException
 	{
+		if(riskLevel != Bet.LOW && riskLevel != Bet.MEDIUM && riskLevel != Bet.HIGH)
+			throw new BettingException(Misc.MSG_BETTING_INVALID_LEVEL);
+		
 		if(user.getAccount() == User.ACCOUNT_FREE) 
 			if(riskLevel != Bet.LOW)
-				throw new Exception("Free users can only place low-bets");
+				throw new BettingException(Misc.MSG_BETTING_FREEUSERS_RESTRICTION);
 		
 		this.riskLevel = riskLevel;
 	}
@@ -80,13 +88,13 @@ public class Bet
 		return amount;
 	}
 
-	public void setAmount(int amount) throws Exception
+	public void setAmount(int amount) throws BettingException
 	{
 		if(amount < 0)
-			throw new Exception("Free users are limited to place maximum bet of 5 euro");
+			throw new BettingException(Misc.MSG_BETTING_INVALID_AMOUNT);
 
-		if(user.getAccount() == User.ACCOUNT_FREE && amount > 5)
-			throw new Exception("Free users are limited to place maximum bet of 5 euro");
+		if(user.getAccount() == User.ACCOUNT_FREE && amount > FREE_USER_MAX_BET)
+			throw new BettingException(Misc.MSG_BETTING_FREEUSERS_AMOUNT_LIMIT);
 		
 		this.amount = amount;
 	}

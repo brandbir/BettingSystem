@@ -12,9 +12,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import betting.helper.BettingException;
+import betting.helper.Misc;
 import betting.models.Bet;
 import betting.models.BettingCalendar;
 import betting.models.BettingSystem;
+import betting.models.Login;
 import betting.models.User;
 
 public class UserRegistrationTest
@@ -38,6 +41,17 @@ public class UserRegistrationTest
 	}
 	
 	@Test
+	public void testUserExists()
+	{
+		user.setUsername("andrew");
+		assertEquals("andrew", user.getUsername());
+		
+		BettingSystem.addUser(null, user);
+		assertEquals(true, BettingSystem.userExists(null, "andrew"));
+		assertEquals(false, BettingSystem.userExists(null, "brandon"));
+
+	}
+	@Test
 	public void testUserName()
 	{
 		User other = new User();
@@ -45,8 +59,8 @@ public class UserRegistrationTest
 		assertEquals("andrew", user.getUsername());
 		other.setUsername("andrew");
 		
-		bettingSystem.addUser(user);
-		bettingSystem.addUser(other);
+		BettingSystem.addUser(null, user);
+		BettingSystem.addUser(null, user);
 		
 		assertEquals(1, bettingSystem.getNumberofUsers());
 	}
@@ -66,16 +80,16 @@ public class UserRegistrationTest
 		assertEquals("awerdert", user.getPassword());
 	}
 	
-	@Test (expected = IllegalArgumentException.class)
+	@Test
 	public void testPasswordFail()
 	{
-		user.setPassword("brandon");
+		assertEquals(Misc.FAIL, user.setPassword("brandon"));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testEmptyNameSurname()
 	{
-		user.setSurname("");
+		assertEquals(Misc.FAIL, user.setSurname(""));
 	}
 	
 	@Test
@@ -88,22 +102,22 @@ public class UserRegistrationTest
 		assertEquals("andrew", user.getName());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testOnlyAlphabetical2()
 	{
-		user.setName("34534543adkfjdnf");
+		assertEquals(Misc.FAIL, user.setName("34534543adkfjdnf"));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testOnlyNumbers()
 	{
-		user.setName("34534543");
+		assertEquals(Misc.FAIL, user.setName("34534543"));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testWhiteSpace()
 	{
-		user.setName("dgsfng dskgjsbg ");
+		assertEquals(Misc.FAIL, user.setName("dgsfng dskgjsbg "));
 	}
 	
 	@Test
@@ -171,7 +185,7 @@ public class UserRegistrationTest
 	/**
 	 * Testing DOB to be less than 18 years old (by day)
 	 */
-	@Test (expected = IllegalArgumentException.class)
+	@Test
 	public void testFailDOB1()
 	{
 		BettingCalendar mockedCalendar = mock(BettingCalendar.class);
@@ -189,7 +203,7 @@ public class UserRegistrationTest
 	/**
 	 * Testing DOB to be less than 18 years old (by month)
 	 */
-	@Test (expected = IllegalArgumentException.class)
+	@Test
 	public void testFailDOB2()
 	{
 		BettingCalendar mockedCalendar = mock(BettingCalendar.class);
@@ -200,7 +214,7 @@ public class UserRegistrationTest
 		when(user.bettingCalendar.getCurrentDate()).thenReturn(mockedCurrentDate);
 		
 		Date dateOfBirth = BettingCalendar.getDate(2000,2,11);
-		user.setDateOfBirth(dateOfBirth);
+		assertEquals(Misc.FAIL, user.setDateOfBirth(dateOfBirth));
 		
 	}
 	
@@ -240,7 +254,7 @@ public class UserRegistrationTest
 	@Test
 	public void testFreeUser()
 	{
-		user.setAccount(User.ACCOUNT_FREE);
+		user.setAccount(String.valueOf(User.ACCOUNT_FREE));
 		assertEquals(0, user.getAccount()); 
 	}
 	
@@ -250,17 +264,17 @@ public class UserRegistrationTest
 	@Test
 	public void testPremiumUser()
 	{
-		user.setAccount(User.ACCOUNT_PREMIUM);
+		user.setAccount(String.valueOf(User.ACCOUNT_PREMIUM));
 		assertEquals(1, user.getAccount()); 
 	}
 	
 	/**
 	 * Testing the selection of a free account
 	 */
-	@Test (expected = IllegalArgumentException.class)
+	@Test
 	public void testInvalidUser()
 	{
-		user.setAccount(3);
+		assertEquals(Misc.FAIL, user.setAccount(String.valueOf(3)));
 	}
 	
 	@Test
@@ -270,10 +284,10 @@ public class UserRegistrationTest
 		assertEquals("4568822148985156", user.getCardNumber());
 	}
 	
-	@Test (expected = IllegalArgumentException.class)
+	@Test
 	public void testInValidCreditCard()
 	{
-		user.setCardNumber("12345678912345678");
+		assertEquals(Misc.FAIL, user.setCardNumber("12345678912345678"));
 	}
 	
 	@Test
@@ -290,7 +304,7 @@ public class UserRegistrationTest
 		assertEquals(d, user.getExpiryDate());
 	}
 	
-	@Test (expected = IllegalArgumentException.class)
+	@Test
 	public void validInvalidExpiryDate()
 	{
 		
@@ -302,7 +316,7 @@ public class UserRegistrationTest
 		
 		
 		Date expiryDate = BettingCalendar.getDate(2012, 11, 24);
-		user.setExpiryDate(expiryDate);
+		assertEquals(Misc.FAIL, user.setExpiryDate(expiryDate));
 	}
 	
 	
@@ -313,34 +327,34 @@ public class UserRegistrationTest
 		assertEquals("123", user.getCvv());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void invalidCVV1()
 	{
-		user.setCvv("1235");
+		assertEquals(Misc.FAIL, user.setCvv("1235"));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void invalidCVV2()
 	{
-		user.setCvv("ann");
+		assertEquals(Misc.FAIL, user.setCvv("ann"));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void invalidCVV3()
 	{
-		user.setCvv("");
+		assertEquals(Misc.FAIL, user.setCvv(""));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void invalidCVV4()
 	{
-		user.setCvv("a nn");
+		assertEquals(Misc.FAIL, user.setCvv("a nn"));
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void invalidCVV5()
 	{
-		user.setCvv("123 456");
+		assertEquals(Misc.FAIL, user.setCvv("123 456"));
 	} 
 	
 	/**
@@ -351,8 +365,10 @@ public class UserRegistrationTest
 	{
 		user.setUsername("mousey");
 		user.setPassword("masterpassword");
-		bettingSystem.addUser(user);
-		assertEquals(true, bettingSystem.login("mousey", "masterpassword"));
+		BettingSystem.addUser(null, user);
+		
+		User user = bettingSystem.login(null, "mousey", "masterpassword", null);
+		assertEquals(Login.LOGIN_SUCCESS, user.getLoginType());
 	}
 	
 	/**
@@ -363,8 +379,10 @@ public class UserRegistrationTest
 	{
 		user.setUsername("mousey");
 		user.setPassword("master*******");
-		bettingSystem.addUser(user);
-		assertEquals(false,bettingSystem.login("mousey", "masterpassword"));
+		BettingSystem.addUser(null, user);
+		
+		User user = bettingSystem.login(null, "mousey", "masterpassword", null);
+		assertEquals(Login.LOGIN_FAIL, user.getLoginType());
 	}
 	
 	@Test
@@ -372,9 +390,9 @@ public class UserRegistrationTest
 	{
 		user.setUsername("mousey");
 		user.setPassword("master*******");
-		bettingSystem.addUser(user);
-		bettingSystem.login("mousey", "masterpassword");
-		bettingSystem.login("mousey", "masterpassword");
+		BettingSystem.addUser(null, user);
+		user = bettingSystem.login(null, "mousey", "masterPassword", null);
+		user = bettingSystem.login(null, "mousey", "masterPassword", null);
 		assertEquals(2, user.getInvalidPasswordCount());
 	}
 	
@@ -383,8 +401,8 @@ public class UserRegistrationTest
 	{
 		user.setUsername("mousey");
 		user.setPassword("masterPassword");
-		bettingSystem.addUser(user);
-		bettingSystem.login("mousey", "masterPassword");
+		BettingSystem.addUser(null, user);
+		user = bettingSystem.login(null, "mousey", "masterPassword", null);
 		assertEquals(0, user.getInvalidPasswordCount());
 	}
 	
@@ -399,10 +417,12 @@ public class UserRegistrationTest
 		user.setPassword("masterPassword");
 		user.setInvalidPasswordCount(3);
 		user.setTimeofInvalidLogin(time);
-		bettingSystem.addUser(user);
+		BettingSystem.addUser(null, user);
 		
 		when(calendar.getCurrentTime()).thenReturn(time + 4*60*1000);
-		assertEquals(false, bettingSystem.login("mousey", "jehgfhjgrgfrhj"));
+		
+		User tempUser = bettingSystem.login(null, "mousey", "jehgfhjgrgfrhj", user);
+		assertEquals(Login.LOGIN_FAIL, tempUser.getLoginType());
 	}
 	
 	@Test
@@ -416,10 +436,12 @@ public class UserRegistrationTest
 		user.setPassword("masterPassword");
 		user.setInvalidPasswordCount(3);
 		user.setTimeofInvalidLogin(time);
-		bettingSystem.addUser(user);
+		BettingSystem.addUser(null, user);
 		
 		when(calendar.getCurrentTime()).thenReturn(time + 4*60*1000);
-		assertEquals(false, bettingSystem.login("mousey", "masterPassword"));
+		
+		User tempUser = bettingSystem.login(null, "mousey", "masterPassword", user);
+		assertEquals(Login.LOGIN_LOCKED, tempUser.getLoginType());
 	}
 	
 	@Test
@@ -433,10 +455,12 @@ public class UserRegistrationTest
 		user.setPassword("masterPassword");
 		user.setInvalidPasswordCount(3);
 		user.setTimeofInvalidLogin(time);
-		bettingSystem.addUser(user);
+		BettingSystem.addUser(null, user);
 		
 		when(calendar.getCurrentTime()).thenReturn(time + 5*60*1000);
-		assertEquals(true, bettingSystem.login("mousey", "masterPassword"));
+		
+		User tempUser = bettingSystem.login(null, "mousey", "masterPassword", user);
+		assertEquals(Login.LOGIN_SUCCESS, tempUser.getLoginType());
 	}
 	
 	@Test
@@ -449,10 +473,12 @@ public class UserRegistrationTest
 		user.setUsername("mousey");
 		user.setPassword("masterPassword");
 		user.setInvalidPasswordCount(2);
-		bettingSystem.addUser(user);
+		BettingSystem.addUser(null, user);
 		
 		when(calendar.getCurrentTime()).thenReturn(time + 4*60*1000);
-		assertEquals(false, bettingSystem.login("mousey", "masterPassword2"));
+		
+		User tempUser = bettingSystem.login(null, "mousey", "masterPassword2", user);
+		assertEquals(Login.LOGIN_FAIL, tempUser.getLoginType());
 	}
 	
 	@Test
@@ -467,10 +493,11 @@ public class UserRegistrationTest
 		user.setUsername("brandbir");
 		user.setPassword("testingPassword");
 		user.setInvalidPasswordCount(1);
-		bettingSystem.addUser(user);
-		bettingSystem.login("brandbir", "masterPassword");
+		BettingSystem.addUser(null, user);
 		
-		assertEquals(true, bettingSystem.login("brandbir", "testingPassword"));
+		User tempUser = bettingSystem.login(null, "brandbir", "masterPassword", null);
+		tempUser = bettingSystem.login(null, "brandbir", "testingPassword", null);
+		assertEquals(Login.LOGIN_SUCCESS, tempUser.getLoginType());
 	}
 	
 	@Test
@@ -485,9 +512,15 @@ public class UserRegistrationTest
 		user.setUsername("brandbir");
 		user.setPassword("testingPassword");
 		user.setInvalidPasswordCount(1);
-		bettingSystem.addUser(user);
-		assertEquals(false, bettingSystem.login("brandbir", "masterPassword"));
-		assertEquals(false, bettingSystem.login("brandbir", "testingPassword2")); //the timeOfInvalidLogin should be set
+		BettingSystem.addUser(null, user);
+		
+		user = bettingSystem.login(null, "brandbir", "masterPassword", null);
+		assertEquals(Login.LOGIN_FAIL, user.getLoginType());
+		
+		
+		user = bettingSystem.login(null, "brandbir", "testingPassword2", null); //the timeOfInvalidLogin should be set
+		assertEquals(Login.LOGIN_FAIL, user.getLoginType());
+		
 		assertEquals(time, user.getTimeofInvalidLogin()); //asserting that the mocked current time is being returned
 		
 		//Three consecutive invalid passwords encountered
@@ -495,19 +528,24 @@ public class UserRegistrationTest
 		when(calendar.getCurrentTime()).thenReturn(time + 2*60*1000);
 		
 		//trying to login with valid credentials after 2 mins the account has been locked
-		assertEquals(false, bettingSystem.login("brandbir", "testingPassword"));
 		
+		user = bettingSystem.login(null, "brandbir", "testingPassword", null);
+		assertEquals(Login.LOGIN_LOCKED, user.getLoginType());
+
 		//trying to login with invalid credentials after 3 mins the account has been locked
 		when(calendar.getCurrentTime()).thenReturn(time + 3*60*1000);
-		assertEquals(false, bettingSystem.login("brandbir", "tesstingPassword"));
+		user = bettingSystem.login(null, "brandbir", "testingPassword", null);
+		assertEquals(Login.LOGIN_LOCKED, user.getLoginType());
 		
 		//trying to login with valid credentials after 4 mins the account has been locked
 		when(calendar.getCurrentTime()).thenReturn(time + 4*60*1000);
-		assertEquals(false, bettingSystem.login("brandbir", "testingPassword"));
+		user = bettingSystem.login(null, "brandbir", "testingPassword", null);
+		assertEquals(Login.LOGIN_LOCKED, user.getLoginType());
 						
 		//trying to login with valid credentials after 5 mins the account has been locked
 		when(calendar.getCurrentTime()).thenReturn(time + 5*60*1000);
-		assertEquals(true, bettingSystem.login("brandbir", "testingPassword"));
+		user = bettingSystem.login(null, "brandbir", "testingPassword", null);
+		assertEquals(Login.LOGIN_SUCCESS, user.getLoginType());
 		
 		//checking that the invalidPasswordCount is reset to 0 after a successful login by a user
 		assertEquals(0, user.getInvalidPasswordCount());
@@ -518,8 +556,8 @@ public class UserRegistrationTest
 	public void testingFreeAccountFail() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_FREE);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_FREE));
+		BettingSystem.addUser(null, user);
 		assertEquals(user, bettingSystem.getUser("Brandon"));
 		assertEquals(1, bettingSystem.getNumberofUsers());
 		
@@ -527,11 +565,11 @@ public class UserRegistrationTest
 	}
 	
 	@Test 
-	public void testingFreeAccountSuccess() throws Exception
+	public void testingFreeAccountSuccess() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_FREE);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_FREE));
+		BettingSystem.addUser(null, user);
 		assertEquals(user, bettingSystem.getUser("Brandon"));
 		assertEquals(1, bettingSystem.getNumberofUsers());
 		
@@ -542,48 +580,48 @@ public class UserRegistrationTest
 	
 	@SuppressWarnings("unused")
 	@Test
-	public void testingPremiumAccountSuccess() throws Exception
+	public void testingPremiumAccountSuccess() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_PREMIUM);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_PREMIUM));
+		BettingSystem.addUser(null, user);
 		
 		Bet bet = new Bet(user, Bet.HIGH, 5);
 	}
 	
 	@Test
-	public void testingPremiumAccountSuccess2() throws Exception
+	public void testingPremiumAccountSuccess2() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_PREMIUM);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_PREMIUM));
+		BettingSystem.addUser(null, user);
 		
 		@SuppressWarnings("unused")
 		Bet bet = new Bet(user, Bet.LOW, 5);
 	}
 	
 	@Test
-	public void testingPremiumAccountSuccess3() throws Exception
+	public void testingPremiumAccountSuccess3() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_PREMIUM);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_PREMIUM));
+		BettingSystem.addUser(null, user);
 		
 		@SuppressWarnings("unused")
 		Bet bet = new Bet(user, Bet.MEDIUM, 5);
 	}
 	
 	@Test
-	public void placingBets() throws Exception
+	public void placingBets() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_PREMIUM);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_PREMIUM));
+		BettingSystem.addUser(null, user);
 		
 		User user2 = new User();
 		user2.setUsername("Andrew");
-		user2.setAccount(User.ACCOUNT_PREMIUM);
-		bettingSystem.addUser(user2);
+		user2.setAccount(String.valueOf(User.ACCOUNT_PREMIUM));
+		BettingSystem.addUser(null, user2);
 		
 		Bet bet = new Bet(user, Bet.MEDIUM, 5);
 		Bet bet2 = new Bet(user2, Bet.MEDIUM, 5);
@@ -598,11 +636,11 @@ public class UserRegistrationTest
 	}
 	
 	@Test
-	public void validFreeUserBet() throws Exception
+	public void validFreeUserBet() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_FREE);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_FREE));
+		BettingSystem.addUser(null, user);
 		
 		Bet bet = new Bet(user, Bet.LOW, 5);
 		bettingSystem.placeBet(null, bet);
@@ -610,11 +648,11 @@ public class UserRegistrationTest
 	}
 	
 	@Test
-	public void validFreeUserBet2() throws Exception
+	public void validFreeUserBet2() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_FREE);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_FREE));
+		BettingSystem.addUser(null, user);
 		
 		//placing a bet over 5
 		Bet bet = new Bet(user, Bet.LOW, 0);
@@ -622,12 +660,12 @@ public class UserRegistrationTest
 		assertEquals(bet, bettingSystem.getLastBet(user.getUsername()));
 	}
 	
-	@Test(expected = Exception.class)
+	@Test(expected = BettingException.class)
 	public void invalidFreeUserBet() throws Exception
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_FREE);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_FREE));
+		BettingSystem.addUser(null, user);
 		
 		//placing a bet over 5
 		Bet bet = new Bet(user, Bet.LOW, -1);
@@ -637,12 +675,12 @@ public class UserRegistrationTest
 	
 	
 	
-	@Test(expected = Exception.class)
-	public void invalidFreeUserBet2() throws Exception
+	@Test(expected = BettingException.class)
+	public void invalidFreeUserBet2() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_FREE);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_FREE));
+		BettingSystem.addUser(null, user);
 		
 		//placing a bet over 5
 		Bet bet = new Bet(user, Bet.LOW, 6);
@@ -651,11 +689,11 @@ public class UserRegistrationTest
 	}
 	
 	@Test
-	public void validNumberFreeUserBets() throws Exception
+	public void validNumberFreeUserBets() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_FREE);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_FREE));
+		BettingSystem.addUser(null, user);
 		
 		Bet bet = new Bet(user, Bet.LOW, 3);
 		bettingSystem.placeBet(null, bet);
@@ -666,11 +704,11 @@ public class UserRegistrationTest
 	}
 	
 	@Test (expected = Exception.class)
-	public void invalidNumberFreeUserBets() throws Exception
+	public void invalidNumberFreeUserBets() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_FREE);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_FREE));
+		BettingSystem.addUser(null, user);
 		
 		Bet bet = new Bet(user, Bet.LOW, 3);
 		bettingSystem.placeBet(null, bet);
@@ -682,11 +720,11 @@ public class UserRegistrationTest
 	}
 	
 	@Test
-	public void validNumberPremiumUserBets() throws Exception
+	public void validNumberPremiumUserBets() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_PREMIUM);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_PREMIUM));
+		BettingSystem.addUser(null, user);
 		
 		Bet bet = new Bet(user, Bet.MEDIUM, 500);
 		bettingSystem.placeBet(null, bet);
@@ -699,11 +737,11 @@ public class UserRegistrationTest
 	}
 	
 	@Test (expected = Exception.class)
-	public void invalidNumberPremiumUserBets() throws Exception
+	public void invalidNumberPremiumUserBets() throws BettingException
 	{
 		user.setUsername("Brandon");
-		user.setAccount(User.ACCOUNT_PREMIUM);
-		bettingSystem.addUser(user);
+		user.setAccount(String.valueOf(User.ACCOUNT_PREMIUM));
+		BettingSystem.addUser(null, user);
 		
 		Bet bet = new Bet(user, Bet.MEDIUM, 1500);
 		bettingSystem.placeBet(null, bet);

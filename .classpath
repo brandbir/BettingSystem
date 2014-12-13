@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="external/lib/mockito-all-1.9.5-sources.jar"/>
 	<classpathentry kind="lib" path="external/lib/mockito-all-1.9.5.jar"/>
 	<classpathentry kind="lib" path="external/lib/javax.servlet-api-3.0.1.jar"/>
+	<classpathentry kind="lib" path="external/lib/java-json.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

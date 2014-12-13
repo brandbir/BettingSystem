@@ -3,11 +3,11 @@ package betting.models;
 import java.util.Calendar;
 import java.util.Date;
 
+import betting.helper.LogFile;
+import betting.helper.Misc;
+
 public class User
 {
-	//Dependency Class 'CalendarYear' - This means that User Class depends on
-	//CalendarYear Class which can be mocked
-	
 	public static final int ACCOUNT_FREE	= 0;
 	public static final int ACCOUNT_PREMIUM = 1;
 	public static final int ACCOUNT_UNKNOWN	= -1;
@@ -74,11 +74,19 @@ public class User
 	/**
 	 * @param password the password to set for the user
 	 */
-	public void setPassword(String password)
+	public int setPassword(String password)
 	{
 		if(validatePassword(password))
+		{
 			this.password = password;
-		else throw new IllegalArgumentException("Invalid Password");
+			return Misc.SUCCESS;
+		}
+		
+		else
+		{
+			LogFile.logError(Misc.MSG_INVALID_PASSWORD);
+			return Misc.FAIL;
+		}
 	}
 	
 	/**
@@ -92,11 +100,20 @@ public class User
 	/**
 	 * @param name the name to set for the user
 	 */
-	public void setName(String name)
+	public int setName(String name)
 	{
 		if(validateNameSurname(name))
+		{
 			this.name = name;
-		else throw new IllegalArgumentException("Invalid name");
+		}
+		
+		else
+		{
+			LogFile.logError(Misc.MSG_INVALID_NAME);
+			return Misc.FAIL;
+		}
+		
+		return Misc.SUCCESS;
 	}
 	
 	/**
@@ -110,11 +127,18 @@ public class User
 	/**
 	 * @param surname  surname to set for the user
 	 */
-	public void setSurname(String surname)
+	public int setSurname(String surname)
 	{
 		if(validateNameSurname(surname))
 			this.surname = surname;
-		else throw new IllegalArgumentException("Invalid Surname");
+		
+		else
+		{
+			LogFile.logError("Invalid Surname");
+			return Misc.FAIL;
+		}
+		
+		return Misc.SUCCESS;
 	}
 	
 	/**
@@ -128,12 +152,20 @@ public class User
 	/**
 	 * @param dateOfBirth dateOfBirth to be set for the user
 	 */
-	public void setDateOfBirth(Date dateOfBirth)
+	public int setDateOfBirth(Date dateOfBirth)
 	{
 		if(validateDOB(dateOfBirth))
+		{
 			this.dateOfBirth = dateOfBirth;
+		}
 		
-		else throw new IllegalArgumentException("Invalid Date");
+		else
+		{
+			LogFile.logError("Age should be over 18");
+			return Misc.FAIL;
+		}
+		
+		return Misc.SUCCESS;
 	} 
 	
 	/**
@@ -155,13 +187,29 @@ public class User
 	/**
 	 * @param type of user account
 	 */
-	public void setAccount(int premium)
+	public int setAccount(String premiumString)
 	{
-		if(premium == ACCOUNT_FREE || premium == ACCOUNT_PREMIUM)
-			this.premium = premium;
+		try
+		{
+			int premium = Integer.parseInt(premiumString);
 			
-		else
-			throw new IllegalArgumentException("Account can be Free or Premium");
+			if(premium == ACCOUNT_FREE || premium == ACCOUNT_PREMIUM)
+			{
+				this.premium = premium;
+			}
+				
+			else
+			{
+				LogFile.logError(Misc.MSG_INVALID_ACCOUNT);
+				return Misc.FAIL;
+			}
+		}
+		catch (NumberFormatException e)
+		{
+			return Misc.FAIL;
+		}
+		
+		return Misc.SUCCESS;
 	}
 	
 	/**
@@ -175,12 +223,19 @@ public class User
 	/**
 	 * @param cardNumber the cardNumber to set
 	 */
-	public void setCardNumber(String cardNumber)
+	public int setCardNumber(String cardNumber)
 	{
 		if(luhnsalgorithm(cardNumber))
+		{
 			this.cardNumber = cardNumber;
+		}
 		else
-			throw new IllegalArgumentException("Invalid Credit Card Number"); 
+		{
+			LogFile.logError(Misc.MSG_INVALID_CREDITCARD);
+			return Misc.FAIL;
+		}
+		
+		return Misc.SUCCESS;
 	}
 	
 	/**
@@ -208,11 +263,20 @@ public class User
 	/**
 	 * @param expiryDate the expiryDate to set
 	 */
-	public void setExpiryDate(Date expiryDate)
+	public int setExpiryDate(Date expiryDate)
 	{
 		if(validateExpiryDate(expiryDate))
+		{
 			this.expiryDate = expiryDate;
-		else throw new IllegalArgumentException("Invalid Expiry Date");
+		}
+		
+		else
+		{
+			LogFile.logError(Misc.MSG_INVALID_EXPIRYDATE);
+			return Misc.FAIL;
+		}
+		
+		return Misc.SUCCESS;
 	}
 	
 	
@@ -227,11 +291,19 @@ public class User
 	/**
 	 * @param cvv the cvv to set
 	 */
-	public void setCvv(String cvv)
+	public int setCvv(String cvv)
 	{
 		if(validCVV(cvv))
+		{
 			this.cvv = cvv;
-		else throw new IllegalArgumentException("Invalid CVV");
+		}
+		else
+		{
+			LogFile.logError(Misc.MSG_INVALID_CVV);
+			return Misc.FAIL;
+		}
+		
+		return Misc.SUCCESS;
 	}
 	
 	public void setTimeofInvalidLogin(long time)
@@ -321,30 +393,37 @@ public class User
 		return s.matches("[a-zA-Z]+");
 	}
 	
-	public static boolean luhnsalgorithm(String creditNumberArray) {
+	public static boolean luhnsalgorithm(String creditNumberArray)
+	{
+		try
+		{
+			int[] digits = new int[creditNumberArray.length()];
 			
-		int[] digits = new int[creditNumberArray.length()];
-		
-		for(int i = 0; i < creditNumberArray.length(); i++)
-		{
-			digits[i] = Integer.parseInt(creditNumberArray.substring(i, i + 1));
-		}
-
-		int sum = 0;
-		int length = digits.length;
-		for (int i = 0; i < length; i++)
-		{
-
-			// get digits in reverse order
-			int digit = digits[length - i - 1];
-
-			// every 2nd number multiply with 2
-			if (i % 2 == 1)
+			for(int i = 0; i < creditNumberArray.length(); i++)
 			{
-				digit *= 2;
+				digits[i] = Integer.parseInt(creditNumberArray.substring(i, i + 1));
 			}
-			sum += digit > 9 ? digit - 9 : digit;
+	
+			int sum = 0;
+			int length = digits.length;
+			for (int i = 0; i < length; i++)
+			{
+	
+				// get digits in reverse order
+				int digit = digits[length - i - 1];
+	
+				// every 2nd number multiply with 2
+				if (i % 2 == 1)
+				{
+					digit *= 2;
+				}
+				sum += digit > 9 ? digit - 9 : digit;
+			}
+			return sum % 10 == 0;
 		}
-		return sum % 10 == 0;
+		catch (NumberFormatException e)
+		{
+			return false;
+		}
 	}
 }

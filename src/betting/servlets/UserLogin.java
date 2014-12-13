@@ -51,7 +51,8 @@ public class UserLogin extends HttpServlet
 			
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
-			User loggingUser = (User) userSession.getAttribute("loggedUser"); //with each login, it is checked for invalid credentials and might also be locked 
+			//Obtaining logged user from session : user that tried to login with invalid credentials
+			User loggingUser = (User) userSession.getAttribute("loggedUser"); 
 	
 			loggingUser = bettingSystem.login(con, username, password, loggingUser);
 			System.out.println("Login Type:" + loggingUser.getLoginType().toString() + 

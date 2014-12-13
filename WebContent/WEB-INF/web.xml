@@ -2,45 +2,42 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:javaee="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
   <display-name>Betting System</display-name>
   <description>Betting System v1.0</description>
-  
   <resource-ref>
     <description>DB Connection</description>
     <res-ref-name>jdbc/TEST</res-ref-name>
     <res-type>javax.sql.DataSource</res-type>
     <res-auth>Container</res-auth>
   </resource-ref>
- 
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
-  
   <servlet>
     <servlet-name>UserSubmission</servlet-name>
     <servlet-class>betting.servlets.UserRegistration</servlet-class>
   </servlet>
-  
   <servlet-mapping>
     <servlet-name>UserSubmission</servlet-name>
     <url-pattern>/UserSubmission</url-pattern>
   </servlet-mapping>
-  
   <servlet>
     <servlet-name>UserLogin</servlet-name>
     <servlet-class>betting.servlets.UserLogin</servlet-class>
   </servlet>
-  
   <servlet-mapping>
     <servlet-name>UserLogin</servlet-name>
     <url-pattern>/UserLogin</url-pattern>
   </servlet-mapping>
-  
   <servlet>
     <servlet-name>ManageBets</servlet-name>
     <servlet-class>betting.servlets.ManageBets</servlet-class>
   </servlet>
-  
   <servlet-mapping>
     <servlet-name>ManageBets</servlet-name>
     <url-pattern>/ManageBets</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>Initializer</servlet-name>
+    <servlet-class>betting.servlets.Initializer</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
 </web-app>
