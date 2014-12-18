@@ -1,79 +1,70 @@
-/**
- * 
- */
+
+var ajaxCall;
 
 function validateLogin()
 {
-	alert('Validating');
    if( document.loginForm.username.value == "" )
    {
-     alert( "Please provide your username!" );
      document.loginForm.username.focus() ;
      return false;
    }
    if( document.loginForm.password.value == "" )
    {
-     alert( "Please provide your password!" );
      document.loginForm.password.focus() ;
      return false;
    }
    return( true );
+};
+
+function receiveJSONManageBets()
+{
+	alert('accessing Manage Bets fn');
+	
+	var level = $('#riskLevel').val();
+	var amount = $('#amount').val();
+	var urlString = '/ManageBets?level='+level+'&amount='+amount;
+	
+	ajaxCall = $.ajax({
+		url: urlString, //sending url string with parameters....sending request
+		cache: false,
+		dataType: 'json',
+		success: function(event) //obtaining response
+		{
+			updatingContent(event);
+		},
+		complete: function(event) 
+		{
+			alert('Complete : ' + event.data);
+		}
+	});
 }
 
-//###FOR AMOUNT######
-
-$(document).ready(function() {
-    $("#slider").slider({
-        animate: true,
-        value:1,
-        min: 0,
-        max: 1000,
-        step: 10,
-        slide: function(event, ui) {
-            update(1,ui.value); //changed
-        }
-    });
-
-    $("#slider2").slider({
-        animate: true,
-        value:0,
-        min: 0,
-        max: 500,
-        step: 1,
-        slide: function(event, ui) {
-            update(2,ui.value); //changed
-        }
-    });
-
-    //Added, set initial value.
-    $("#amount").val(0);
-    $("#duration").val(0);
-    $("#amount-label").text(0);
-    $("#duration-label").text(0);
-    
-    update();
-});
-
-//changed. now with parameter
-function update(slider,val) {
-  //changed. Now, directly take value from ui.value. if not set (initial, will use current value.)
-  var $amount = slider == 1?val:$("#amount").val();
-  var $duration = slider == 2?val:$("#duration").val();
-
-  /* commented
-  $amount = $( "#slider" ).slider( "value" );
-  $duration = $( "#slider2" ).slider( "value" );
-   */
-
-   $total = "$" + ($amount * $duration);
-   $( "#amount" ).val($amount);
-   $( "#amount-label" ).text($amount);
-   $( "#duration" ).val($duration);
-   $( "#duration-label" ).text($duration);
-   $( "#total" ).val($total);
-   $( "#total-label" ).text($total);
-
-   $('#slider a').html('<label><span class="glyphicon glyphicon-chevron-left"></span> '+$amount+' <span class="glyphicon glyphicon-chevron-right"></span></label>');
-   $('#slider2 a').html('<label><span class="glyphicon glyphicon-chevron-left"></span> '+$duration+' <span class="glyphicon glyphicon-chevron-right"></span></label>');
+function receiveJSONManageBets()
+{
+	ajaxCall = $.ajax({
+		url: '/UserSubmission',
+		cache: false,
+		dataType: 'text',
+		success: function(event)
+		{
+			alert('Success : ' + event.data);
+			updatingContent(event);
+		},
+		complete: function(event) 
+		{
+			alert('Complete : ' + event.data);
+		}
+	});
 }
-//###FOR AMOUNT######
+
+
+function updatingContent(data)
+{
+	var json = data;
+	var json_parsed = JSON.parse(json);
+	
+	
+	
+	//examples json_parse.TIMESTAMP
+}
+	

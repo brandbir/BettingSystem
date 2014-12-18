@@ -67,7 +67,7 @@ public class ManageBets extends HttpServlet
 			{
 				LogFile.logError("ManageBets.processRequest() - " + e.getMessage());
 				errorFlag = true;
-				error = Misc.addError("bet", e.getMessage(), error);
+				error = Misc.addError("amount", e.getMessage(), error);
 			}
 			
 			finally

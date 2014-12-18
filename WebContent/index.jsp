@@ -8,7 +8,6 @@ User loggedUser = (User)session.getAttribute("loggedUser");
 if(loggedUser != null)
 {
    loginMessage = loggedUser.getLoginType().toString(); 
-   
 }
 
 %>
@@ -32,6 +31,7 @@ if(loggedUser != null)
 
     <!-- Custom CSS -->
     <link href="css/full-slider.css" rel="stylesheet">
+    <link href="css/bootstrap-select.css" rel="stylesheet">
     <link type="text/css" href="css/styling.css" rel="stylesheet">
     
     <!-- jQuery -->
@@ -41,6 +41,7 @@ if(loggedUser != null)
     <!-- Bootstrap Core JavaScript Placed here inkella ma jahdimx habba ordering!!-->
     <script src="js/bootstrap.min.js"></script>
     <script src="js/functionality.js"></script>
+    <script src="js/bootstrap-select.js"></script>
     
     <!-- JQuery-UI -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
@@ -48,8 +49,9 @@ if(loggedUser != null)
   <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
   <script>
   $(function() {
-    $( "#DOB" ).datepicker({dateFormat:'yy-mm-dd'});
+    $( "#dob" ).datepicker({dateFormat:'yy-mm-dd', defaultDate: '1980-01-01'});
     $("#expiry-date").datepicker({dateFormat:'yy-mm-dd'});
+    
   });
   </script>
 </head>
@@ -67,24 +69,21 @@ if(loggedUser != null)
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="indexMain.jsp">Speed * Bet</a>
+                <a class="navbar-brand" href="index.jsp">Speed * Bet</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-<!--                     <li> -->
-<!--                         <a href="#">About</a> -->
-<!--                     </li> -->
-                </ul>
-                <form id="login" action="UserLogin?action=login" method="post" class="navbar-form navbar-right" role="search" onsubmit="return(validateLogin());">
+                <form id="login" name="loginForm" action="UserLogin?action=login" method="post" class="navbar-form navbar-right" role="search" onsubmit="return(validateLogin());">
+                     <div id="loginMessage" class="form-group">   
+                        <%=loginMessage%>
+                     </div>
                      <div class="form-group">
                          <input type="text" class="form-control" name="username" placeholder="Username">
                      </div>
                      <div class="form-group">
                          <input type="password" class="form-control" name="password" placeholder="Password">
                      </div>
-                     <input type="submit" class="btn btn-default" value="Login">
-                     <div class="alert alert-danger"><%=loginMessage%></div>
+                     <button type="submit" class="btn btn-default" >Log In</button>
                 </form>
             </div>
             
@@ -167,51 +166,106 @@ if(loggedUser != null)
                <h4 class="modal-title" id="modalLabel">Sign Up!</h4>
              </div>
              <div class="modal-body">
-               <form id="user-submission" action="UserSubmission" role="form" method="post">
                  <div class="form-group">
-                   <label for="username" class="control-label">Username:</label>
-                   <input type="text" class="form-control" id="username" placeholder="Username" name="username"/>
+                   <label for="username" class="control-label">Username:</label> 
+                   <input type="text" class="form-control" id="username" placeholder="Username" name="username" />
                  </div>
                  <div class="form-group">
                    <label for="Password" class="control-label">Password:</label>
-                   <input type="password" class="form-control" id="Password" placeholder="Password" name="password"/>
+                   <input type="password" class="form-control" id="password" placeholder="Password" name="password" />
                  </div>
                  <div class="form-group">
-                   <label for="name" class="control-label">Name:</label>
-                   <input type="text" class="form-control" id="name" placeholder="name" name="user-name" />
+                   <label for="name" class="control-label">Name:</label> 
+                   <input type="text" class="form-control" id="user-name" placeholder="name" name="user-name" />
                  </div>
                  <div class="form-group">
-                   <label for="surname" class="control-label">Surname:</label>
-                   <input type="text" class="form-control" id="surnname" placeholder="surname" name="surname"/>
+                   <label for="surname" class="control-label">Surname:</label> 
+                   <input type="text" class="form-control" id="surname" placeholder="surname" name="surname" />
                  </div>
                  <div class="form-group">
-                   <label for="DOB" class="control-label">Date of Birth:</label>
-                   <input type="text" id="DOB" class="form-control" value="yyyy-mm-dd" name="dob">
+                   <label for="dob" class="control-label">Date of Birth:</label> 
+                   <input type="text" id="dob" class="form-control"  placeholder="yyyy-mm-dd" name="dob" />
                  </div>
                  <div class="form-group">
-                   <label for="credNo" class="control-label">Credit Card Number:</label>
-                   <input type="text" class="form-control" id="credNo" placeholder="Credit Card Number" name="credit-card"/>
+                   <label for="credit-card" class="control-label">Credit Card Number:</label> 
+                   <input type="text" class="form-control" id="credit-card" placeholder="Credit Card Number" name="credit-card" />
                  </div>
                   <div class="form-group">
                    <label for="credExpiry" class="control-label">Credit Card Expiry Date:</label>
-                   <input type="text" id="expiry-date" class="form-control" value="yyyy-mm-dd" name="expiry-date">
+                   <input type="text" id="expiry-date" class="form-control" placeholder="yyyy-mm-dd" name="expiry-date" />
                  </div>
                  <div class="form-group">
-                   <label for="credCVV" class="control-label">Credit Card CVV:</label>
-                   <input type="text" class="form-control" id="credCVV" placeholder="Credit Card Expiry Date" name="cvv"/>
+                   <label for="cvv" class="control-label">Credit Card CVV:</label> 
+                   <input type="text" class="form-control" id="cvv" placeholder="Credit Card Expiry Date" name="cvv"/>
                  </div>
                  <br>
-                 <div class="btn-group" data-toggle="buttons">
-					<select name="premium">
-					    <option value="<%=User.ACCOUNT_PREMIUM%>">Premium</option>
+                 <div class="form-group">
+                    <select id="premium" name="premium" class="selectpicker" data-style="btn-primary">
+                        <option value="<%=User.ACCOUNT_PREMIUM%>">Premium</option>
                         <option value="<%=User.ACCOUNT_FREE%>">Free</option>
-					  </select>
+                      </select>
                  </div>
+                 <script>
+                 $('.selectpicker').selectpicker();
+                 </script>
                  <div class="modal-footer">
-	               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	               <input type="submit" class="btn btn-default" value="Submit Details">
-	             </div>
-               </form>
+                   <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                   <button id="signUpButton" class="btn btn-primary" >Submit</button>
+                 </div>
+                 
+                 <script>
+                 $( "#signUpButton" ).click(function() {
+                 var username = $('#username').val();
+                 var password = $('#password').val();
+                 var name = $('#user-name').val();
+                 var surname = $('#surname').val();
+                 var dob = $('#dob').val();
+                 var creditCard = $('#credit-card').val();
+                 var expiryDate = $('#expiry-date').val();
+                 var cvv = $('#cvv').val();
+                 var premium = $('#premium').val();
+                 
+                 var urlString = 'UserSubmission?username='+username+'&password='+password+'&user-name='+name+'&surname='+surname
+                		 +'&dob='+dob+'&credit-card='+creditCard+'&expiry-date='+expiryDate+'&cvv='+cvv+'&premium='+premium;
+                 
+                $.ajax({
+                     url: urlString, //sending url string with parameters....sending request
+                     cache: false,
+                     dataType: 'application/json',
+                     complete: function(response) 
+                     {
+                         var x = response.responseText;
+                         updatingContent(x);
+                     }
+                     });
+                 });
+                 
+                 function updatingContent(received_json)
+                 {
+                     var json = received_json;
+                     
+                     
+                     var errors = JSON.parse(json);
+                     var key = "";
+
+	                    for (key in errors)
+	                    {
+	                     if (errors.hasOwnProperty(key))
+	                     {
+	                         console.log(key + " = " + errors[key]);
+	                         var id = "#" + key;
+	                         $(id).val(errors[key]).css( "color", "#ff9494" ).keydown(function() {
+	                             $(id).css( "color", "black" ); //TODO
+	                           });
+	                     }
+	                    } 
+                     
+                     //alert('JSON received '+ json + 'json_name : ' + json_name + 'json_value : ' + json_value);
+                     
+                 }
+                 
+                 
+                 </script>
              </div>
              
            </div>
