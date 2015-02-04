@@ -20,7 +20,7 @@ import betting.models.BettingSystem;
 import betting.models.Login;
 import betting.models.User;
 
-public class UserRegistrationTest
+public class UnitTesting
 {
 	User user;
 	BettingSystem bettingSystem;
@@ -285,6 +285,13 @@ public class UserRegistrationTest
 	}
 	
 	@Test
+	public void testValidCreditCard2()
+	{
+		user.setCardNumber("ejhjegf");
+		assertEquals("", user.getCardNumber());
+	}
+	
+	@Test
 	public void testInValidCreditCard()
 	{
 		assertEquals(Misc.FAIL, user.setCardNumber("12345678912345678"));
@@ -356,7 +363,7 @@ public class UserRegistrationTest
 	{
 		assertEquals(Misc.FAIL, user.setCvv("123 456"));
 	} 
-	
+		
 	/**
 	 * Login Success
 	 */
@@ -406,8 +413,11 @@ public class UserRegistrationTest
 		assertEquals(0, user.getInvalidPasswordCount());
 	}
 	
+	/**
+	 * Testing invalid Credentials
+	 */
 	@Test
-	public void testInvalidLogin()
+	public void testInvalidLogin1()
 	{
 		BettingCalendar calendar = mock(BettingCalendar.class);
 		bettingSystem.setBettingCalendar(calendar); //mocking dependent calendar
@@ -425,6 +435,9 @@ public class UserRegistrationTest
 		assertEquals(Login.LOGIN_FAIL, tempUser.getLoginType());
 	}
 	
+	/**
+	 * Testing locked account
+	 */
 	@Test
 	public void testInvalidLogin2()
 	{
@@ -445,7 +458,7 @@ public class UserRegistrationTest
 	}
 	
 	@Test
-	public void testInvalidLogin3()
+	public void testValidLogin3()
 	{
 		BettingCalendar calendar = mock(BettingCalendar.class);
 		bettingSystem.setBettingCalendar(calendar); //mocking dependent calendar
@@ -482,7 +495,7 @@ public class UserRegistrationTest
 	}
 	
 	@Test
-	public void testInvalidLogin5()
+	public void testValidLogin5()
 	{
 		BettingCalendar calendar = mock(BettingCalendar.class);
 		bettingSystem.setBettingCalendar(calendar); //mocking dependent calendar
@@ -756,5 +769,4 @@ public class UserRegistrationTest
 		assertEquals(null, bettingSystem.getUser("Mario"));
 		assertEquals(null, bettingSystem.getLastBet("Mario"));
 	}
-	
 }
