@@ -3,9 +3,7 @@ package betting.servlets;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -63,8 +61,17 @@ public class UserRegistration extends HttpServlet
 			user = new User();
 			
 			//checking for invalid date formats
-			Date dateOfBirth = parseDate(request.getParameter("dob"), "dob");
-			Date expiryDate = parseDate(request.getParameter("expiry-date"), "expiry-date");
+			Date dateOfBirth = null;
+			Date expiryDate = null;
+			
+			String paramDate = request.getParameter("dob");
+			String paramExpiryDate = request.getParameter("expiry-date");
+
+			if(!paramDate.isEmpty())
+				dateOfBirth = parseDate(paramDate, "dob");
+			
+			if(!paramExpiryDate.isEmpty())
+				expiryDate = parseDate(paramExpiryDate, "expiry-date");
 			
 			user.setUsername(request.getParameter("username"));
 			
@@ -111,13 +118,13 @@ public class UserRegistration extends HttpServlet
 				error = Misc.addError("cvv", Misc.MSG_INVALID_CVV, error);
 			}
 
-			if(expiryDate != null && (user.setExpiryDate(expiryDate)) == Misc.FAIL)
+			if(user.setExpiryDate(expiryDate) == Misc.FAIL)
 			{
 				success = false;
 				error = Misc.addError("expiry-date", Misc.MSG_INVALID_EXPIRYDATE, error);
 			}
 
-			if (dateOfBirth != null && (user.setDateOfBirth(dateOfBirth)) == Misc.FAIL)
+			if (user.setDateOfBirth(dateOfBirth) == Misc.FAIL)
 			{
 				success = false;
 				error = Misc.addError("dob", Misc.MSG_INVALID_DOB, error);
@@ -125,7 +132,10 @@ public class UserRegistration extends HttpServlet
 			
 			// register user if data is all valid
 			if (success)
+			{
 				BettingSystem.addUser(con, user);
+				error = Misc.addError("success","Successfull Login", error);
+			}
 		}
 		
 		finally
@@ -154,18 +164,19 @@ public class UserRegistration extends HttpServlet
 	 */
 	public Date parseDate(String stringDate, String parameterName)
 	{
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = null;
 		
 		try
 		{
-			return formatter.parse(stringDate);
+			date = Misc.parseDate(stringDate);
 		}
 		
 		catch (ParseException e)
 		{
 			LogFile.logError("UserRegistration.parseDate() - Invalid " + parameterName + " Format: " + e.getMessage());
 			error = Misc.addError(parameterName, "Invalid " + parameterName + " Format", error);
-			return null;
 		}
+		
+		return date;
 	}
 }

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"
     import="java.util.ArrayList,
+    		java.util.Date,
             java.sql.Connection,
             betting.models.User,
             betting.models.BettingSystem,
@@ -32,9 +33,18 @@
     
     if(loggedUser != null)
     {
-        loginMessage = loggedUser.getLoginType().toString(); //LoginType -> if user is locked or unlocked
+    	//LoginType -> if user is locked or unlocked
+        loginMessage = loggedUser.getLoginType().toString(); 
         dateOfBirth = loggedUser.getDateOfBirth().toString();
-        expiryDate = loggedUser.getExpiryDate().toString();
+        
+        //There will be cases that the expiry data of a particular
+        //user is null because it will be expired
+        Date date = loggedUser.getExpiryDate();
+        if(date != null)
+        	expiryDate = loggedUser.getExpiryDate().toString();
+        
+        else
+        	expiryDate = "Expired Date";
 
         Connection con = ConnectionPool.getConnection();
         bettingSystem = BettingSystem.getInstance();
@@ -94,7 +104,7 @@
             <form id="logout" name="menuForm" action="UserLogin?action=logout" method="post" class="navbar-form navbar-right" role="search" >
                     <a class="btn btn-default" data-target="#userDetailsModal" data-toggle="modal" href="#" >Details</a>
                     <a class="btn btn-default" data-target="#tableModal" data-toggle="modal" href="#">Placed Bets</a>
-                    <input type="submit" class="btn btn-default" value="Logout">
+                    <input id="logoutButton" type="submit" class="btn btn-default" value="Logout">
             </form>
             <!-- /.navbar-collapse -->
         </div>
@@ -133,7 +143,6 @@
                                            <p><button id="betSubmitButton" class="btn btn-primary" >Place Bet</button></p>
                                            <script>
                                                $('#betSubmitButton').click(function testingfn(){
-                                                    alert('Testing');
                                                
                                                var level = $('#riskLevel').val();
                                                var amount = $('#amount').val();
@@ -147,7 +156,10 @@
                                                    {
                                                 	   var x = response.responseText;
                                                 	   if(x == "<%=Misc.MSG_VALID_BET%>")
+                                                		{
+                                                			alert("<%=Misc.MSG_VALID_BET%>");
                                                      		location.reload();
+                                                		}
                                                 	   else
                                                 	   		updatingContent(x);
                                                       
@@ -161,8 +173,6 @@
                                                {
                                                    var json = received_json;
                                                    var json_parsed = JSON.parse(json);
-                                                   alert('json_parsed ' + json_parsed);
-                                                   alert('json name ' + Object.keys(json_parsed)[0]);
                                                    $("#amount").val(json_parsed.amount).css( "color", "red" );
                                                }
                                                
@@ -203,9 +213,9 @@
                                     		for(int i = userBets.size(); i > userBets.size()-10; i--)
                                     		{%> 
                                             <tr id="user-betsRow">
-                                                <td class="col-md-2"><%=i-1%></td>
-                                                <td class="col-md-2"><%=userBets.get(i-1).getRiskLevelDescription()%></td>
-                                                <td class="col-md-2">&#8364;<%=userBets.get(i-1).getAmount()%></td>
+                                                <td id="amount-id" class="col-md-2"><%=i-1%></td>
+                                                <td id="amount-risk" class="col-md-2"><%=userBets.get(i-1).getRiskLevelDescription()%></td>
+                                                <td id="amount-bet" class="col-md-2">&#8364;<%=userBets.get(i-1).getAmount()%></td>
                                             </tr>
                                           <%}
                                     	}

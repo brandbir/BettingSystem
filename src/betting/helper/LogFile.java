@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class LogFile
 {
-	public static boolean writeMode = false;
+	public static boolean writeMode = true;
 	public static void logError(String msg)
 	{
 		if(writeMode)

@@ -2,14 +2,17 @@ package betting.models;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import betting.helper.BettingException;
+import betting.helper.LogFile;
 import betting.helper.Misc;
 import betting.helper.SQLHelper;
 
@@ -112,7 +115,8 @@ public class BettingSystem
 	
 	
 	/**
-	 * Check if a username is already being used by another user
+	 * Check if a username is already being used by another user 
+	 * CONNECTION CAN BE NULL
 	 * @param con Database connection
 	 * @param username username to be found
 	 * @return whether the username is found in the system
@@ -157,7 +161,7 @@ public class BettingSystem
 			BettingSystem system = BettingSystem.getInstance();
 			system.addUser(user);
 		}
-		else
+		else if(!userExists(con, user.getUsername()))
 		{
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 			StringBuffer args = new StringBuffer();
@@ -202,6 +206,41 @@ public class BettingSystem
 	}
 	
 	/**
+	 * Deletes a user from a connection
+	 * @param con
+	 * @param username username
+	 */
+	public static void removeUser(String username, boolean intialCleanUp)
+	{
+		Connection con = ConnectionPool.getStringConnection();
+		if(con != null)
+		{
+			try
+			{
+				
+					String sql;
+					
+					if(intialCleanUp)
+						sql = "DELETE FROM BETTING.USERS WHERE USERNAME LIKE \'" + username + "%\'"; 
+					else
+						sql = "DELETE FROM BETTING.USERS WHERE USERNAME = \'" + username + "\'";
+					
+					PreparedStatement ps = con.prepareStatement(sql);
+					ps.execute();
+				
+			} 
+			catch (SQLException e)
+			{
+				System.out.println("BettingSystem.addUser() - " + e.getMessage());
+			}
+			finally
+			{
+				SQLHelper.close(con);
+			}
+		}
+	}
+	
+	/**
 	 * Gets the total number of users found in the Betting System
 	 * @return total users
 	 */
@@ -222,6 +261,14 @@ public class BettingSystem
 	{
 		if(user == null)
 			user = getUser(con, username);
+		
+		//if user remained null means username does does not exists (Quick fix)
+		if(user == null)
+		{
+			user = new User();
+			user.setLoginType(Login.LOGIN_DOES_NOT_EXIST);
+			return user;
+		} 
 		
 		String dbPassword = user.getPassword();
 		if (dbPassword.equals(password))
@@ -276,7 +323,7 @@ public class BettingSystem
 		boolean validFreeAccount = (user.getAccount() == User.ACCOUNT_FREE) && (userBets.size() < 3);
 		
 		if((bet.getAmount() + currentBetSum) > MAX_BETTING_SUM)
-			throw new BettingException(Misc.MSG_BETTING_LIMIT);
+			throw new BettingException(Misc.MSG_BETTING_PREMIUM_LIMIT);
 		
 		else if(validFreeAccount || user.getAccount() == User.ACCOUNT_PREMIUM )
 		{
@@ -292,6 +339,40 @@ public class BettingSystem
 			throw new BettingException(Misc.MSG_BETTING_FREEUSERS_LIMIT);
 
 		betList.put(user.getUsername(), userBets);
+	}
+	
+	/**
+	 * Deletes a user bets from DB
+	 * @param con
+	 * @param username username
+	 */
+	public static void removeBets(String username, boolean initial)
+	{
+		Connection con = ConnectionPool.getStringConnection();
+		if(con != null)
+		{
+			try
+			{
+				String sql;
+				if(initial)
+					sql = "DELETE FROM BETTING.BETS WHERE USERNAME LIKE \'" + username + "%\'";
+				
+				else
+					sql = "DELETE FROM BETTING.BETS WHERE USERNAME = \'" + username + "\'"; 
+
+					
+				PreparedStatement ps = con.prepareStatement(sql);
+				ps.execute();
+			} 
+			catch (SQLException e)
+			{
+				LogFile.logError("BettingSystem.removeBets() - " + e.getMessage());
+			}
+			finally
+			{
+				SQLHelper.close(con);
+			}
+		}
 	}
 	
 	/**
@@ -312,6 +393,23 @@ public class BettingSystem
 			return sum;
 		}
 		return 0;
+	}
+	
+	public int[] getTotalBetsAmount(Connection con, String username)
+	{
+		int[] result = {0, 0};
+		User user = getUser(con, username);
+		ArrayList<Bet> userBets = getBets(con, user);
+		int totalAmount = 0;
+		
+		//allocate a new list for bets 
+		if(userBets != null) 
+			totalAmount += getTotalAmount(userBets, user.getUsername());
+		
+		result[0] = userBets.size();
+		result[1] = totalAmount;
+		
+		return result;
 	}
 	
 	/**
@@ -417,8 +515,24 @@ public class BettingSystem
 			}
 			finally
 			{
+				System.out.println(callStmt.toString());
 				SQLHelper.close(con);
 			}
 		}
 	}
+	
+	public static int randInt(int min, int max)
+	{
+
+		// NOTE: Usually this should be a field rather than a method
+		// variable so that it is not re-seeded every call.
+		Random rand = new Random();
+
+		// nextInt is normally exclusive of the top value,
+		// so add 1 to make it inclusive
+		int randomNum = rand.nextInt((max - min) + 1) + min;
+
+		return randomNum;
+	}
+	
 }

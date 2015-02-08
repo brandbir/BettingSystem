@@ -9,11 +9,57 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="external/lib/mockito-all-1.9.5-javadoc.jar"/>
 	<classpathentry kind="lib" path="external/lib/mockito-all-1.9.5-sources.jar"/>
 	<classpathentry kind="lib" path="external/lib/mockito-all-1.9.5.jar"/>
 	<classpathentry kind="lib" path="external/lib/javax.servlet-api-3.0.1.jar"/>
 	<classpathentry kind="lib" path="external/lib/java-json.jar"/>
+	<classpathentry kind="lib" path="external/lib/cucumber-core-1.1.5.jar"/>
+	<classpathentry kind="lib" path="external/lib/cucumber-html-0.2.3.jar"/>
+	<classpathentry kind="lib" path="external/lib/cucumber-java-1.1.5.jar"/>
+	<classpathentry kind="lib" path="external/lib/cucumber-junit-1.1.5.jar"/>
+	<classpathentry kind="lib" path="external/lib/cucumber-jvm-deps-1.0.3.jar"/>
+	<classpathentry kind="lib" path="external/lib/gherkin-2.12.1.jar"/>
+	<classpathentry kind="lib" path="external/lib/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="external/lib/jchronic-0.2.6.jar"/>
+	<classpathentry kind="lib" path="external/lib/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="external/lib/apache-mime4j-0.6.jar"/>
+	<classpathentry kind="lib" path="external/lib/bsh-1.3.0.jar"/>
+	<classpathentry kind="lib" path="external/lib/cglib-nodep-2.1_3.jar"/>
+	<classpathentry kind="lib" path="external/lib/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path="external/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="external/lib/commons-exec-1.1.jar"/>
+	<classpathentry kind="lib" path="external/lib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="external/lib/commons-jxpath-1.3.jar"/>
+	<classpathentry kind="lib" path="external/lib/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="external/lib/commons-logging-1.1.3.jar"/>
+	<classpathentry kind="lib" path="external/lib/cssparser-0.9.14.jar"/>
+	<classpathentry kind="lib" path="external/lib/gson-2.3.jar"/>
+	<classpathentry kind="lib" path="external/lib/guava-18.0.jar"/>
+	<classpathentry kind="lib" path="external/lib/hamcrest-library-1.3.jar"/>
+	<classpathentry kind="lib" path="external/lib/htmlunit-2.15.jar"/>
+	<classpathentry kind="lib" path="external/lib/htmlunit-core-js-2.15.jar"/>
+	<classpathentry kind="lib" path="external/lib/httpclient-4.3.4.jar"/>
+	<classpathentry kind="lib" path="external/lib/httpcore-4.3.2.jar"/>
+	<classpathentry kind="lib" path="external/lib/httpmime-4.3.4.jar"/>
+	<classpathentry kind="lib" path="external/lib/ini4j-0.5.2.jar"/>
+	<classpathentry kind="lib" path="external/lib/jcommander-1.29.jar"/>
+	<classpathentry kind="lib" path="external/lib/jetty-websocket-8.1.8.jar"/>
+	<classpathentry kind="lib" path="external/lib/jna-3.4.0.jar"/>
+	<classpathentry kind="lib" path="external/lib/jna-platform-3.4.0.jar"/>
+	<classpathentry kind="lib" path="external/lib/junit-dep-4.11.jar"/>
+	<classpathentry kind="lib" path="external/lib/nekohtml-1.9.21.jar"/>
+	<classpathentry kind="lib" path="external/lib/netty-3.5.7.Final.jar"/>
+	<classpathentry kind="lib" path="external/lib/operadriver-1.5.jar"/>
+	<classpathentry kind="lib" path="external/lib/phantomjsdriver-1.1.0.jar"/>
+	<classpathentry kind="lib" path="external/lib/protobuf-java-2.4.1.jar"/>
+	<classpathentry kind="lib" path="external/lib/sac-1.3.jar"/>
+	<classpathentry kind="lib" path="external/lib/selenium-java-2.44.0.jar"/>
+	<classpathentry kind="lib" path="external/lib/serializer-2.7.1.jar"/>
+	<classpathentry kind="lib" path="external/lib/testng-6.8.5.jar"/>
+	<classpathentry kind="lib" path="external/lib/xalan-2.7.1.jar"/>
+	<classpathentry kind="lib" path="external/lib/xercesImpl-2.11.0.jar"/>
+	<classpathentry kind="lib" path="external/lib/xml-apis-1.4.01.jar"/>
+	<classpathentry kind="lib" path="external/lib/modeljunit.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

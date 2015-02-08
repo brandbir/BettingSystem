@@ -154,7 +154,7 @@ public class User
 	 */
 	public int setDateOfBirth(Date dateOfBirth)
 	{
-		if(validateDOB(dateOfBirth))
+		if(dateOfBirth != null && validateDOB(dateOfBirth)) //TODO: testcase for datofbirth is null (coverage)
 		{
 			this.dateOfBirth = dateOfBirth;
 		}
@@ -225,7 +225,7 @@ public class User
 	 */
 	public int setCardNumber(String cardNumber)
 	{
-		if(luhnsalgorithm(cardNumber))
+		if(!cardNumber.isEmpty() && luhnsalgorithm(cardNumber))
 		{
 			this.cardNumber = cardNumber;
 		}
@@ -265,7 +265,7 @@ public class User
 	 */
 	public int setExpiryDate(Date expiryDate)
 	{
-		if(validateExpiryDate(expiryDate))
+		if(expiryDate != null && validateExpiryDate(expiryDate)) //TODO ADD TEST CASE FOR EXPIRY DATE NULL FOR MAXIMIZING BRANCH COVERAGE 
 		{
 			this.expiryDate = expiryDate;
 		}
@@ -380,7 +380,7 @@ public class User
 	
 	public boolean validCVV(String cvv)
 	{ 
-		if(!isAlphabetical(cvv) && !cvv.contains(" "))
+		if(!cvv.isEmpty() && !isAlphabetical(cvv) && !cvv.contains(" "))
 		{
 			if(cvv.length() <= 3 && cvv.length() > 0)
 				return true;

@@ -52,21 +52,29 @@ public class UserLogin extends HttpServlet
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			//Obtaining logged user from session : user that tried to login with invalid credentials
-			User loggingUser = (User) userSession.getAttribute("loggedUser"); 
+			
+			User loggingUser = (User) userSession.getAttribute(username); 
+
 	
 			loggingUser = bettingSystem.login(con, username, password, loggingUser);
-			System.out.println("Login Type:" + loggingUser.getLoginType().toString() + 
+			System.out.println(loggingUser.getUsername() + " Login Type:" + loggingUser.getLoginType().toString() + 
 								"\nTime of invalid Login: " + loggingUser.getTimeofInvalidLogin() + 
 								"\nInvalid Passwords: " + loggingUser.getInvalidPasswordCount() + "\n");
 			
-			userSession.setAttribute("loggedUser", loggingUser);
+			//userSession.setAttribute(username, loggingUser);
+			userSession.setAttribute(username, loggingUser);
 			
 			SQLHelper.close(con);
 			
 			if(loggingUser.getLoginType() == Login.LOGIN_SUCCESS)
+			{
+				userSession.setAttribute("loggedUser", loggingUser);
 				response.sendRedirect("usersection.jsp");
+			}
 			else
-				response.sendRedirect("index.jsp");
+			{
+				response.sendRedirect("index.jsp?message=" + loggingUser.getLoginType());
+			}
 			
 		}
 	}

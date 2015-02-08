@@ -1,15 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"
-    import="betting.models.User"
+    import="betting.models.User,
+    		betting.helper.Misc"
   %>
 <%
-String loginMessage = "";
-User loggedUser = (User)session.getAttribute("loggedUser");
-if(loggedUser != null)
-{
-   loginMessage = loggedUser.getLoginType().toString(); 
-}
-
+	String loginMessage = request.getParameter("message");
+	
+	if(loginMessage == null)
+		loginMessage = "";
 %>
 
 <!DOCTYPE html>
@@ -44,15 +42,30 @@ if(loggedUser != null)
     <script src="js/bootstrap-select.js"></script>
     
     <!-- JQuery-UI -->
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-  <script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+    <link rel="stylesheet" href="css/jquery-ui.css">
+  <script src="js/jquery-1.10.2.js"></script>
+  <script src="js/jquery-ui.js"></script>
   <script>
+  
+  function clear()
+  {
+	  $('#username').text('');
+	  $('#password').text('');
+	  $('#user-name').text('');
+	  $('#surname').text('');
+	  $('#dob').text('');
+	  $('#credit-card').text('');
+	  $('#expiry-date').text('');
+	  $('#cvv').text('');
+  }
+  
   $(function() {
     $( "#dob" ).datepicker({dateFormat:'yy-mm-dd', defaultDate: '1980-01-01'});
     $("#expiry-date").datepicker({dateFormat:'yy-mm-dd'});
-    
+    clear();
   });
+  
+  
   </script>
 </head>
 
@@ -74,16 +87,16 @@ if(loggedUser != null)
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <form id="login" name="loginForm" action="UserLogin?action=login" method="post" class="navbar-form navbar-right" role="search" onsubmit="return(validateLogin());">
-                     <div id="loginMessage" class="form-group">   
+                     <div id="loginMessage" class="form-group" style="color:white; padding:10px">
                         <%=loginMessage%>
                      </div>
                      <div class="form-group">
-                         <input type="text" class="form-control" name="username" placeholder="Username">
+                         <input id="usernameLogin" type="text" class="form-control" name="username" placeholder="Username">
                      </div>
                      <div class="form-group">
-                         <input type="password" class="form-control" name="password" placeholder="Password">
+                         <input id="passwordLogin" type="password" class="form-control" name="password" placeholder="Password">
                      </div>
-                     <button type="submit" class="btn btn-default" >Log In</button>
+                     <button id="loginButton" type="submit" class="btn btn-default" >Log In</button>
                 </form>
             </div>
             
@@ -112,7 +125,7 @@ if(loggedUser != null)
                 <div class="carousel-caption">
                     <h2>Formula 1</h2>
                     <p>Create a new account with a click of a button! </p>
-                    <p><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#signupModal" data-whatever="@mdo">Sign Up Now</button></p>
+                    <p><button id="signUpButton" type="button" class="btn btn-primary" data-toggle="modal" data-target="#signupModal" data-whatever="@mdo">Sign Up Now</button></p>
                 </div>
             </div>
             <div class="item">
@@ -200,7 +213,7 @@ if(loggedUser != null)
                  </div>
                  <br>
                  <div class="form-group">
-                    <select id="premium" name="premium" class="selectpicker" data-style="btn-primary">
+                    <select id="premium" name="premium" data-style="btn-primary" style="width:100%">
                         <option value="<%=User.ACCOUNT_PREMIUM%>">Premium</option>
                         <option value="<%=User.ACCOUNT_FREE%>">Free</option>
                       </select>
@@ -209,12 +222,13 @@ if(loggedUser != null)
                  $('.selectpicker').selectpicker();
                  </script>
                  <div class="modal-footer">
+                 <div id="successfulMessage"> </div>
                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                   <button id="signUpButton" class="btn btn-primary" >Submit</button>
+                   <button id="submitButton" class="btn btn-primary" >Submit</button>
                  </div>
                  
                  <script>
-                 $( "#signUpButton" ).click(function() {
+                 $( "#submitButton" ).click(function() {
                  var username = $('#username').val();
                  var password = $('#password').val();
                  var name = $('#user-name').val();
@@ -244,24 +258,47 @@ if(loggedUser != null)
                  {
                      var json = received_json;
                      
-                     
-                     var errors = JSON.parse(json);
-                     var key = "";
+					if(json == "<%=Misc.MSG_VALID_REGISTRATION%>")
+					{
+						$('#successfulMessage').css('display', '');
+                		$('#successfulMessage').html("<p id='successRegistration'>Successful Registration. Please Login.</p>");
+                		
+                		//sending request to user login
+                		$.ajax({
+                            url: 'UserLogin?action=login&username=' + $('#username').val() + '&password=' + $('#password').val(),
+                            cache: false,
+                            complete: function(response) 
+                            {
+                            	console.log('access user section');
+                            	location.replace("usersection.jsp");
+                            }
+                            
+                        });
+					}
+					else
+					{
+					
+                		$('#successfulMessage').css('display', 'none');
+
+                     	var errors = JSON.parse(json);
+                     	var key = "";
 
 	                    for (key in errors)
 	                    {
-	                     if (errors.hasOwnProperty(key))
-	                     {
+	                    	if (errors.hasOwnProperty(key))
+	                     	{
+	                    	 
 	                         console.log(key + " = " + errors[key]);
 	                         var id = "#" + key;
 	                         $(id).val(errors[key]).css( "color", "#ff9494" ).keydown(function() {
 	                             $(id).css( "color", "black" ); //TODO
 	                           });
-	                     }
+	                     	}
 	                    } 
                      
                      //alert('JSON received '+ json + 'json_name : ' + json_name + 'json_value : ' + json_value);
                      
+                 	}
                  }
                  
                  

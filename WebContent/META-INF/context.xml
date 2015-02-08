@@ -7,7 +7,7 @@
 		password="Brandbir018"
 		driverClassName="com.ibm.db2.jcc.DB2Driver"
 		url="jdbc:db2://77.71.245.17:50000/TEST"
-		maxActive="10" 
+		maxActive="100" 
 		maxIdle="4"/>
 </Context>
 
